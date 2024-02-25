@@ -45,7 +45,7 @@ public class PlaneFrame extends Plane {
 
                 Complex tileSize = this.getTileSize().divide(this.zoom);
                 tileSize.setReal(tileSize.getReal() * singleWidth);
-                tileSize.setImaginary(tileSize.getImaginary() * singleHeight);
+                tileSize.setImag(tileSize.getImag() * singleHeight);
 
 
                 tileRaster[y][x] = new PlaneTile(new Point(singleWidth, singleHeight), tileSize, top);
@@ -83,7 +83,7 @@ public class PlaneFrame extends Plane {
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
 
-        Log.LOGGER.finest(String.format("Calculated Frame for %d ms", timeElapsed));
+        Log.LOGGER.fine(String.format("Calculated Frame for %d ms", timeElapsed));
         return grid;
     }
 
@@ -111,10 +111,10 @@ public class PlaneFrame extends Plane {
         public Complex transformToPlane(Point point) {
             //calculate tile dimensions
             double tileWidth = this.tilePlaneSize.getReal() / this.tileGridSize.x;
-            double tileHeight = this.tilePlaneSize.getImaginary() / this.tileGridSize.y;
+            double tileHeight = this.tilePlaneSize.getImag() / this.tileGridSize.y;
 
             double real = this.tileOrigin.getReal() + point.x * tileWidth;
-            double imag = this.tileOrigin.getImaginary() - point.y * tileHeight;
+            double imag = this.tileOrigin.getImag() - point.y * tileHeight;
 
             return Complex.ofCartesian(real, imag);
         }

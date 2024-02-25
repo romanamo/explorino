@@ -10,7 +10,7 @@ import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Point;
 
 
-public class FractalModel {
+public class Model {
 
 
     private Evaluator evaluator =

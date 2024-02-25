@@ -1,6 +1,5 @@
 package de.romanamo.explorino.math;
 
-import de.romanamo.explorino.math.Complex;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +13,7 @@ class ComplexTest {
         Complex cartesian = Complex.ofCartesian(1, 1);
 
         assertEquals(1, cartesian.getReal(), EPSILON);
-        assertEquals(1, cartesian.getImaginary(), EPSILON);
+        assertEquals(1, cartesian.getImag(), EPSILON);
     }
 
     @Test
@@ -33,7 +32,7 @@ class ComplexTest {
         Complex sum = a.add(b);
 
         assertEquals(11.0, sum.getReal(), EPSILON);
-        assertEquals(-2.0, sum.getImaginary(), EPSILON);
+        assertEquals(-2.0, sum.getImag(), EPSILON);
     }
 
     @Test
@@ -44,7 +43,7 @@ class ComplexTest {
         Complex sum = a.subtract(b);
 
         assertEquals(-7, sum.getReal(), EPSILON);
-        assertEquals(8, sum.getImaginary(), EPSILON);
+        assertEquals(8, sum.getImag(), EPSILON);
     }
 
     @Test
@@ -55,7 +54,7 @@ class ComplexTest {
         Complex multiplied = a.multiply(b);
 
         assertEquals(11, multiplied.getReal(), EPSILON);
-        assertEquals(2, multiplied.getImaginary(), EPSILON);
+        assertEquals(2, multiplied.getImag(), EPSILON);
     }
 
     @Test
@@ -66,7 +65,7 @@ class ComplexTest {
         Complex multiplied = a.multiply(scalar);
 
         assertEquals(3.0, multiplied.getReal(), EPSILON);
-        assertEquals(-3.0, multiplied.getImaginary(), EPSILON);
+        assertEquals(-3.0, multiplied.getImag(), EPSILON);
     }
 
     @Test
@@ -83,7 +82,7 @@ class ComplexTest {
         Complex rotated = a.rotate(2 * Math.PI);
 
         assertEquals(1.0, rotated.getReal(), EPSILON);
-        assertEquals(0, rotated.getImaginary(), EPSILON);
+        assertEquals(0, rotated.getImag(), EPSILON);
     }
 
     @Test
@@ -93,7 +92,7 @@ class ComplexTest {
         Complex conjugated = a.conjugate();
 
         assertEquals(0, conjugated.getReal(), EPSILON);
-        assertEquals(-1, conjugated.getImaginary(), EPSILON);
+        assertEquals(-1, conjugated.getImag(), EPSILON);
     }
 
     @Test
@@ -104,7 +103,7 @@ class ComplexTest {
         Complex multiplied = a.pow(3);
 
         assertEquals(powered.getReal(), multiplied.getReal(), EPSILON);
-        assertEquals(powered.getImaginary(), multiplied.getImaginary(), EPSILON);
+        assertEquals(powered.getImag(), multiplied.getImag(), EPSILON);
     }
 
     @Test
@@ -114,7 +113,7 @@ class ComplexTest {
         a.setAngle(Math.PI / 2);
 
         assertEquals(0, a.getReal(), EPSILON);
-        assertEquals(1, a.getImaginary(), EPSILON);
+        assertEquals(1, a.getImag(), EPSILON);
     }
 
     @Test
@@ -124,7 +123,7 @@ class ComplexTest {
         a.setRadius(2);
 
         assertEquals(2, a.getReal(), EPSILON);
-        assertEquals(0, a.getImaginary(), EPSILON);
+        assertEquals(0, a.getImag(), EPSILON);
     }
 
     @Test

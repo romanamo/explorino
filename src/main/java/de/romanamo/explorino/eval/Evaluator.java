@@ -108,4 +108,9 @@ public abstract class Evaluator {
     public void setEscapeCondition(Predicate<Complex> escapeCondition) {
         this.escapeCondition = escapeCondition;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

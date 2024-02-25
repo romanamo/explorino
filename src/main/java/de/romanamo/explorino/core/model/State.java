@@ -4,7 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-public class AppModel {
+public class State {
 
     BooleanProperty isSideInfo = new SimpleBooleanProperty(false);
 

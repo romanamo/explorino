@@ -1,13 +1,11 @@
 package de.romanamo.explorino.core;
 
 import de.romanamo.explorino.calc.Grid;
+import de.romanamo.explorino.calc.Plane;
 import de.romanamo.explorino.calc.PlaneFrame;
-import de.romanamo.explorino.core.model.AppModel;
-import de.romanamo.explorino.core.model.FractalModel;
-import de.romanamo.explorino.eval.Evaluator;
-import de.romanamo.explorino.eval.Mandelbrot;
-import de.romanamo.explorino.eval.Newton;
-import de.romanamo.explorino.eval.Polynomial;
+import de.romanamo.explorino.core.model.Model;
+import de.romanamo.explorino.core.model.State;
+import de.romanamo.explorino.eval.*;
 import de.romanamo.explorino.gui.FractalDisplay;
 import de.romanamo.explorino.io.colorize.*;
 import de.romanamo.explorino.io.image.Export;
@@ -18,10 +16,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Builder;
@@ -33,15 +28,15 @@ import java.util.Map;
 
 public class FractalView implements Builder<Region> {
 
-    private final FractalModel model;
+    private final Model model;
 
     private final Stage stage;
 
-    private final AppModel appModel;
+    private final State state;
 
-    public FractalView(FractalModel model, AppModel appModel, Stage stage) {
+    public FractalView(Model model, State state, Stage stage) {
         this.model = model;
-        this.appModel = appModel;
+        this.state = state;
         this.stage = stage;
     }
 
@@ -57,8 +52,8 @@ public class FractalView implements Builder<Region> {
         root.setTop(menuBar);
         root.setCenter(canvasPane);
 
-        appModel.isSideInfoProperty().addListener(o -> {
-            if (appModel.isSideInfoProperty().get()) {
+        state.isSideInfoProperty().addListener(o -> {
+            if (state.isSideInfoProperty().get()) {
                 root.setRight(createInfoDisplay());
             } else {
                 root.setRight(null);
@@ -66,7 +61,7 @@ public class FractalView implements Builder<Region> {
         });
 
 
-        FractalDisplay fractalDisplay = new FractalDisplay(this.model, this.appModel);
+        FractalDisplay fractalDisplay = new FractalDisplay(this.model, this.state);
 
 
         canvasPane.getChildren().addAll(fractalDisplay);
@@ -86,10 +81,12 @@ public class FractalView implements Builder<Region> {
 
         fileChooser.setTitle(I18n.getMessage("export"));
 
-        FileChooser.ExtensionFilter extensionFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png");
-        FileChooser.ExtensionFilter extensionFilterJPG = new FileChooser.ExtensionFilter("JPEG files (*jpeg, *jpg)", "*.jpeg", "*.jpg");
-
-        fileChooser.getExtensionFilters().addAll(extensionFilterPNG, extensionFilterJPG);
+        String fileTitle = I18n.getMessage("file");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter(String.format("PNG %s", fileTitle), "*.png"),
+                new FileChooser.ExtensionFilter(String.format("JPG %s", fileTitle), "*.jpg", "*.jpeg"),
+                new FileChooser.ExtensionFilter(String.format("TIFF %s", fileTitle), "*.tif, *.tiff")
+        );
 
         return fileChooser;
     }
@@ -107,10 +104,18 @@ public class FractalView implements Builder<Region> {
 
     private Menu createFileMenu() {
         Menu menuFile = new Menu(I18n.getMessage("file"));
+
+        //elements
         MenuItem menuFileSettings = new MenuItem(I18n.getMessage("settings"));
+        MenuItem menuFileExport = new MenuItem(I18n.getMessage("export"));
+        SeparatorMenuItem menuFileSeparator = new SeparatorMenuItem();
+        MenuItem menuFileExit = new MenuItem(I18n.getMessage("exit"));
+
+        //actions
         menuFileSettings.setOnAction(actionEvent -> openSettings());
 
-        MenuItem menuFileExport = new MenuItem(I18n.getMessage("export"));
+        menuFileExit.setOnAction(e -> stage.close());
+
         menuFileExport.setOnAction(e -> {
             FileChooser fileChooser = createExportFileChooser();
 
@@ -126,8 +131,6 @@ public class FractalView implements Builder<Region> {
             }
 
         });
-        SeparatorMenuItem menuFileSeparator = new SeparatorMenuItem();
-        MenuItem menuFileExit = new MenuItem(I18n.getMessage("exit"));
 
         menuFile.getItems().addAll(menuFileExport, menuFileSettings, menuFileSeparator, menuFileExit);
 
@@ -156,7 +159,7 @@ public class FractalView implements Builder<Region> {
 
         CheckMenuItem menuViewItem = new CheckMenuItem(I18n.getMessage("fractal"));
 
-        menuViewItem.selectedProperty().bindBidirectional(appModel.isSideInfoProperty());
+        menuViewItem.selectedProperty().bindBidirectional(state.isSideInfoProperty());
         menuView.getItems().addAll(menuViewItem);
 
         return menuView;
@@ -168,7 +171,7 @@ public class FractalView implements Builder<Region> {
         TreeItem<String> rootItem = new TreeItem<>("Inbox");
         rootItem.setExpanded(true);
         for (int i = 1; i < 6; i++) {
-            TreeItem<String> item = new TreeItem<String>("Message" + i);
+            TreeItem<String> item = new TreeItem<>("Message" + i);
             rootItem.getChildren().add(item);
         }
         TreeView<String> tree = new TreeView<>(rootItem);
@@ -188,111 +191,137 @@ public class FractalView implements Builder<Region> {
         stage.show();
     }
 
-    private Pane createInfoDisplay() {
-        GridPane gridPane = new GridPane();
+    private Region createInfoDisplay() {
+        VBox box = new VBox();
 
-        gridPane.setMaxWidth(400);
-        gridPane.setMinWidth(400);
+        box.setMaxWidth(400);
+        box.setMinWidth(400);
+        box.setFillWidth(true);
+        box.setSpacing(4);
+        box.setPadding(new Insets(4));
 
-        gridPane.setVgap(10);
-        gridPane.setHgap(10);
+        box.getChildren().addAll(
+                createPlaneInfo(),
+                createFractalInfo(),
+                createColorInfo()
+        );
+        return box;
+    }
 
-        Label zoomLabel = new Label();
-        Label offsetLabel = new Label();
+    public Region createPlaneInfo() {
+        GridPane grid = new GridPane();
 
-        gridPane.add(new Label(String.format("%s ", I18n.getMessage("zoom"))), 0, 0);
-        gridPane.add(zoomLabel, 1, 0);
+        grid.getStyleClass().add("info");
+        grid.setHgap(8);
+        grid.setVgap(8);
+        grid.getColumnConstraints().addAll(new ColumnConstraints(64));
+        grid.setPadding(new Insets(8));
 
-        gridPane.add(new Label(String.format("%s ", I18n.getMessage("offset"))), 0, 1);
-        gridPane.add(offsetLabel, 1, 1);
+        Spinner<Double> zoomSpinner = new Spinner<>(0, Double.MAX_VALUE, 10);
+        Spinner<Double> realSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
+        Spinner<Double> imagSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
 
-        int maxIteration = this.model.getEvaluator().getMaxIteration();
+        this.state.infoChannelProperty().addListener((o, s1, s2) -> {
+            Plane plane = this.model.getPlane();
+            Complex offset = plane.getPlaneOffset();
 
-        Label iterationLabel = new Label(Integer.toString(maxIteration));
+            zoomSpinner.getValueFactory().setValue(plane.getZoom());
+            realSpinner.getValueFactory().setValue(offset.getReal());
+            imagSpinner.getValueFactory().setValue(offset.getImag());
+        });
+
+        grid.addRow(0, new Label(String.format("%s ", I18n.getMessage("zoom"))), zoomSpinner);
+        grid.addRow(1, new Label(String.format("%s ", I18n.getMessage("offset"))), realSpinner, imagSpinner);
+
+        return grid;
+    }
+
+    public Region createFractalInfo() {
+        GridPane grid = new GridPane();
+
+        grid.getStyleClass().addAll("info");
+        grid.setHgap(8);
+        grid.setVgap(8);
+        grid.setPadding(new Insets(8));
+
         Slider iterationSlider = new Slider(0, 200, 1);
-        iterationSlider.setShowTickLabels(true);
-        iterationSlider.valueProperty().set(maxIteration);
-        iterationLabel.setText(Integer.toString(maxIteration));
-
         CheckBox optimizationCheckBox = new CheckBox();
 
-        if (this.model.getPlane() instanceof PlaneFrame) {
-            PlaneFrame planeFrame = (PlaneFrame) this.model.getPlane();
-            optimizationCheckBox.setSelected(planeFrame.getUseTileOptimize());
-        }
+        iterationSlider.setShowTickLabels(true);
+        iterationSlider.setMaxWidth(Double.MAX_VALUE);
+        iterationSlider.setValue(this.model.getEvaluator().getMaxIteration());
+
+        iterationSlider.valueProperty().addListener((o, s1, s2) -> {
+            this.model.getEvaluator().setMaxIteration(s2.intValue());
+            state.updateDisplayChannel();
+        });
 
         optimizationCheckBox.selectedProperty().addListener((o, s1, s2) -> {
             if (this.model.getPlane() instanceof PlaneFrame) {
                 PlaneFrame planeFrame = (PlaneFrame) this.model.getPlane();
                 planeFrame.setUseTileOptimize(s2);
 
-                appModel.updateDisplayChannel();
+                state.updateDisplayChannel();
             }
         });
 
-        gridPane.addRow(2, new Label(I18n.getMessage("iterations")), iterationLabel, iterationSlider);
-        gridPane.addRow(3, new Label(I18n.getMessage("fractal")), createFractalChooser());
-        gridPane.addRow(4, new Label(I18n.getMessage("coloring")), createColorizationChoiceBox());
-        gridPane.addRow(5, new Label("Optimization"), optimizationCheckBox );
-
-        iterationSlider.valueProperty().addListener((o, s1, s2) -> {
-            this.model.getEvaluator().setMaxIteration(s2.intValue());
-            iterationLabel.setText(Integer.toString(s2.intValue()));
-
-            appModel.updateDisplayChannel();
+        this.state.infoChannelProperty().addListener((o, s1, s2) -> {
+            grid.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 3);
+            grid.add(retrieveFractalModifier(this.model.getEvaluator()), 1, 3);
         });
 
+        grid.addRow(0, new Label("Iterations"), iterationSlider);
+        grid.addRow(1, new Label("Optimization"), optimizationCheckBox);
+        grid.addRow(2, new Label("Fractal"), createFractalChoice());
+        grid.add(new Label("Modifier"), 0, 3);
+        grid.add(new Pane(), 1, 3);
 
-
-        this.appModel.infoChannelProperty().addListener((o, s1, s2) -> {
-            zoomLabel.setText(String.format("%.3e", this.model.getPlane().getZoom()));
-
-            Complex offset = this.model.getPlane().getPlaneOffset();
-            String offsetString = String.format("(%.3f; %.3f)", offset.getReal(), offset.getImaginary());
-
-            offsetLabel.setText(offsetString);
-        });
-
-
-
-
-        gridPane.setPadding(new Insets(10, 10, 10, 10));
-        return gridPane;
+        return grid;
     }
 
-    public ChoiceBox<String> createFractalChooser() {
-        ChoiceBox<String> choiceBox = new ChoiceBox<>();
+    public Region retrieveFractalModifier(Evaluator evaluator) {
+        if (evaluator instanceof Multibrot) {
+            return createMultiBrotModifier((Multibrot) evaluator);
+        } else if (evaluator instanceof MultiJulia) {
+            return createMultiJuliaModifier((MultiJulia) evaluator);
+        }
+        return new Pane();
+    }
 
-        choiceBox.getItems().add("Mandelbrot");
-        choiceBox.getItems().add("Julia");
-        choiceBox.getItems().add("Newton");
+    public Region createColorInfo() {
+        GridPane grid = new GridPane();
 
-        choiceBox.setValue("Mandelbrot");
+        grid.getStyleClass().addAll("info");
+        grid.setHgap(8);
+        grid.setVgap(8);
+        grid.setPadding(new Insets(8));
 
-        choiceBox.setOnAction(e -> {
-            Evaluator nextEvaluator = this.model.getEvaluator();
-            int maxIteration = this.model.getEvaluator().getMaxIteration();
+        grid.addRow(0, new Label("Colorization"), createColorChoiceBox());
 
-            switch (choiceBox.getValue()) {
-                case "Mandelbrot":
-                    nextEvaluator = new Mandelbrot(maxIteration);
-                    break;
-                case "Newton":
-                    nextEvaluator = new Newton(maxIteration, Polynom.EXAMPLE);
-                    break;
-                case "Julia":
-                    nextEvaluator = new Polynomial(maxIteration, 2, Complex.ofCartesian(-0.8, 0.156));
-                    break;
-                default:
-            }
-            this.model.setEvaluator(nextEvaluator);
-            this.appModel.updateDisplayChannel();
+        return grid;
+    }
+
+    public ChoiceBox<Evaluator> createFractalChoice() {
+        ChoiceBox<Evaluator> choiceBox = new ChoiceBox<>();
+
+        choiceBox.valueProperty().addListener((o, s1, s2) -> {
+            this.model.setEvaluator(s2);
+            this.state.updateInfoChannel();
+            this.state.updateDisplayChannel();
         });
+
+        choiceBox.getItems().addAll(
+                new Mandelbrot(10),
+                new Multibrot(10, 2),
+                new MultiJulia(10, 2, Complex.ofCartesian(0, 0)),
+                new Newton(10, Polynom.EXAMPLE));
 
         return choiceBox;
     }
 
-    public ChoiceBox<String> createColorizationChoiceBox() {
+    public Region createColorChoiceBox() {
+        ChoiceBox<String> coloringChoiceBox = new ChoiceBox<>();
+
         Map<String, Colorable> coloringMap = new HashMap<>();
 
         coloringMap.put("AbsColorization", new AbsColorization());
@@ -301,7 +330,6 @@ public class FractalView implements Builder<Region> {
         coloringMap.put("NewtonColorization", new NewtonColorization(Polynom.EXAMPLE));
         coloringMap.put("PaletteColorization", PaletteColorization.EXAMPLE);
 
-        ChoiceBox<String> coloringChoiceBox = new ChoiceBox<>();
 
         coloringChoiceBox.getItems().addAll(coloringMap.keySet());
 
@@ -311,9 +339,73 @@ public class FractalView implements Builder<Region> {
             if (newColoring != null) {
                 this.model.setColorization(newColoring);
             }
-            this.appModel.updateDisplayChannel();
+            this.state.updateDisplayChannel();
         });
         return coloringChoiceBox;
+    }
+
+    /**
+     * Creates a Modifier for Multi julia fractals.
+     *
+     * @param multiJulia multi julia instance
+     * @return modifier
+     */
+    public Region createMultiJuliaModifier(MultiJulia multiJulia) {
+        GridPane grid = new GridPane();
+
+        grid.setHgap(8);
+        grid.setVgap(8);
+
+        Spinner<Integer> degreeSpinner = new Spinner<>(0, 32, multiJulia.getDegree());
+        Spinner<Double> realSpinner = new Spinner<>(-2.0, 2.0, multiJulia.getParameter().getReal(), 0.01);
+        Spinner<Double> imagSpinner = new Spinner<>(-2.0, 2.0, multiJulia.getParameter().getImag(), 0.01);
+
+        degreeSpinner.valueProperty().addListener((o, s1, s2) -> {
+            multiJulia.setDegree(s2);
+            this.state.updateDisplayChannel();
+        });
+
+        realSpinner.valueProperty().addListener((o, s1, s2) -> {
+            multiJulia.getParameter().setReal(s2);
+            this.state.updateDisplayChannel();
+        });
+
+        imagSpinner.valueProperty().addListener((o, s1, s2) -> {
+            multiJulia.getParameter().setImag(s2);
+            this.state.updateDisplayChannel();
+        });
+
+        grid.addRow(0, new Label("Degree"), degreeSpinner);
+        grid.addRow(1, new Label("Real"), realSpinner);
+        grid.addRow(2, new Label("Imaginary"), imagSpinner);
+
+        return grid;
+    }
+
+    /**
+     * Creates a Modifier for Multi brot fractals.
+     *
+     * @param multiBrot multi brot instance
+     * @return modifier
+     */
+    public Region createMultiBrotModifier(Multibrot multiBrot) {
+        GridPane grid = new GridPane();
+        grid.getColumnConstraints().add(new ColumnConstraints(50));
+
+        grid.setHgap(8);
+        grid.setVgap(8);
+
+        Spinner<Integer> degreeSpinner = new Spinner<>(0, 32, multiBrot.getDegree());
+        degreeSpinner.setEditable(true);
+
+        degreeSpinner.valueProperty().addListener((o, s1, s2) -> {
+            multiBrot.setDegree(s2);
+            this.state.updateDisplayChannel();
+        });
+
+        grid.addRow(0, new Label("Degree"), degreeSpinner);
+
+        return grid;
     }
 
 

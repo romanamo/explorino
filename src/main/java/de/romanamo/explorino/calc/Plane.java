@@ -34,7 +34,7 @@ public abstract class Plane implements Computable, Transformable {
         double transformedX = -planeOrigin.getReal() + coords.x * scaledTileSize.getReal();
 
         //start at top side and add decrement for each x
-        double transformedY = planeOrigin.getImaginary() - coords.y * scaledTileSize.getImaginary();
+        double transformedY = planeOrigin.getImag() - coords.y * scaledTileSize.getImag();
 
         return Complex.ofCartesian(transformedX, transformedY).add(this.planeOffset);
     }
@@ -47,7 +47,7 @@ public abstract class Plane implements Computable, Transformable {
     public Complex getTileSize() {
         return Complex.ofCartesian(
                 Math.abs(this.planeSize.getReal()) / (double) this.gridSize.x,
-                Math.abs(this.planeSize.getImaginary()) / (double) this.gridSize.y);
+                Math.abs(this.planeSize.getImag()) / (double) this.gridSize.y);
     }
 
     public double getZoom() {

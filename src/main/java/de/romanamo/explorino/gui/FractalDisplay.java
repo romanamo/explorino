@@ -1,8 +1,8 @@
 package de.romanamo.explorino.gui;
 
 import de.romanamo.explorino.calc.Grid;
-import de.romanamo.explorino.core.model.AppModel;
-import de.romanamo.explorino.core.model.FractalModel;
+import de.romanamo.explorino.core.model.State;
+import de.romanamo.explorino.core.model.Model;
 import de.romanamo.explorino.io.colorize.Colorable;
 import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.util.Log;
@@ -19,14 +19,14 @@ public class FractalDisplay extends ImageView {
 
     private Complex lastDrag = Complex.ZERO;
 
-    private final FractalModel fractalModel;
+    private final Model model;
 
-    private final AppModel appModel;
+    private final State state;
 
-    public FractalDisplay(FractalModel fractalModel, AppModel appmodel) {
+    public FractalDisplay(Model model, State appmodel) {
         super();
-        this.fractalModel = fractalModel;
-        this.appModel = appmodel;
+        this.model = model;
+        this.state = appmodel;
 
         this.setImage(new WritableImage(600, 600));
         this.setSmooth(false);
@@ -37,22 +37,20 @@ public class FractalDisplay extends ImageView {
         this.fitHeightProperty().addListener(evt -> this.draw());
 
         this.setOnScroll(scrollEvent -> {
-            double zoom = this.fractalModel.getPlane().getZoom();
+            double zoom = this.model.getPlane().getZoom();
 
-            this.fractalModel.getPlane().setZoom(zoom + scrollEvent.getDeltaY() * 0.01 * zoom);
+            this.model.getPlane().setZoom(zoom + scrollEvent.getDeltaY() * 0.01 * zoom);
 
             this.draw();
         });
 
-        this.appModel.displayChannelProperty().addListener((c) -> {
-            this.draw();
-        });
+        this.state.displayChannelProperty().addListener(c -> this.draw());
 
 
         this.addEventFilter(KeyEvent.ANY, e -> {
-            double distance = 0.2 / this.fractalModel.getPlane().getZoom();
-            double x = this.fractalModel.getPlane().getPlaneOffset().getReal();
-            double y = this.fractalModel.getPlane().getPlaneOffset().getImaginary();
+            double distance = 0.2 / this.model.getPlane().getZoom();
+            double x = this.model.getPlane().getPlaneOffset().getReal();
+            double y = this.model.getPlane().getPlaneOffset().getImag();
 
             switch (e.getCode()) {
                 case W:
@@ -68,35 +66,33 @@ public class FractalDisplay extends ImageView {
                     x += distance;
                     break;
                 case I:
-                    this.fractalModel.getPlane().setZoom(this.fractalModel.getPlane().getZoom() + 0.1 * this.fractalModel.getPlane().getZoom());
+                    this.model.getPlane().setZoom(this.model.getPlane().getZoom() + 0.1 * this.model.getPlane().getZoom());
                     break;
                 case O:
-                    this.fractalModel.getPlane().setZoom(this.fractalModel.getPlane().getZoom() - 0.1 * this.fractalModel.getPlane().getZoom());
+                    this.model.getPlane().setZoom(this.model.getPlane().getZoom() - 0.1 * this.model.getPlane().getZoom());
                     break;
                 case R: {
-                    this.fractalModel.getPlane().setZoom(1.0);
-                    this.fractalModel.getPlane().setPlaneOffset(Complex.ZERO);
+                    this.model.getPlane().setZoom(1.0);
+                    this.model.getPlane().setPlaneOffset(Complex.ZERO);
                     this.draw();
                     return;
                 }
             }
-            this.fractalModel.getPlane().setPlaneOffset(Complex.ofCartesian(x, y));
+            this.model.getPlane().setPlaneOffset(Complex.ofCartesian(x, y));
             this.draw();
         });
 
         this.setOnMouseDragged(e -> {
             Complex dragVector = Complex.ofCartesian(e.getSceneX(), -e.getSceneY());
-            Complex utilizedVector = lastDrag.subtract(dragVector).divide(1.9e2 * this.fractalModel.getPlane().getZoom());
+            Complex utilizedVector = lastDrag.subtract(dragVector).divide(1.9e2 * this.model.getPlane().getZoom());
 
-            this.fractalModel.getPlane().setPlaneOffset(this.fractalModel.getPlane().getPlaneOffset().add(utilizedVector));
+            this.model.getPlane().setPlaneOffset(this.model.getPlane().getPlaneOffset().add(utilizedVector));
             this.lastDrag = dragVector;
 
             this.draw();
         });
 
-        this.setOnMousePressed(e -> {
-            this.lastDrag = Complex.ofCartesian(e.getSceneX(), -e.getSceneY());
-        });
+        this.setOnMousePressed(e -> this.lastDrag = Complex.ofCartesian(e.getSceneX(), -e.getSceneY()));
     }
 
     public void draw() {
@@ -106,15 +102,15 @@ public class FractalDisplay extends ImageView {
             Log.LOGGER.fine("Skipped Draw");
             return;
         }
-        this.appModel.updateInfoChannel();
+        this.state.updateInfoChannel();
 
-        Grid grid = this.fractalModel.getPlane().compute(this.fractalModel.getEvaluator());
+        Grid grid = this.model.getPlane().compute(this.model.getEvaluator());
 
         double width = this.getImage().getWidth();
         double height = this.getImage().getHeight();
 
-        int imageWidth = this.fractalModel.getPlane().getGridSize().x;
-        int imageHeight = this.fractalModel.getPlane().getGridSize().y;
+        int imageWidth = this.model.getPlane().getGridSize().x;
+        int imageHeight = this.model.getPlane().getGridSize().y;
 
         WritableImage wi = (WritableImage) this.getImage();
         PixelWriter pw = wi.getPixelWriter();
@@ -126,7 +122,7 @@ public class FractalDisplay extends ImageView {
                 relX = Math.min(relX, imageWidth - 1);
                 relY = Math.min(relY, imageHeight - 1);
 
-                Colorable colorable = this.fractalModel.getColorization();
+                Colorable colorable = this.model.getColorization();
 
                 //set pixel
                 pw.setColor(w, h, colorable.colorize(grid.getField(relX, relY)));

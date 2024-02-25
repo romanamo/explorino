@@ -5,14 +5,22 @@ import de.romanamo.explorino.math.Numeric;
 
 import java.util.function.Function;
 
+/**
+ * Class to represent the newton fractal.
+ */
 public class Newton extends Evaluator {
 
-    private Function<Complex, Complex> function;
+    private final Function<Complex, Complex> function;
 
+    /**
+     * Constructs a Newton fractal.
+     *
+     * @param maxIteration maximum iteration of the evaluating process
+     * @param function     function to evaluate
+     */
     public Newton(int maxIteration, Function<Complex, Complex> function) {
         super(maxIteration);
         this.function = function;
-        //TODO implement Nova fractal
     }
 
     @Override
@@ -43,5 +51,14 @@ public class Newton extends Evaluator {
     @Override
     public Complex initial(Complex element) {
         return element;
+    }
+
+    /**
+     * Gets the function.
+     *
+     * @return function
+     */
+    public Function<Complex, Complex> getFunction() {
+        return function;
     }
 }
