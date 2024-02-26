@@ -1,5 +1,6 @@
 package de.romanamo.explorino.math;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 /**
@@ -7,47 +8,31 @@ import java.util.function.Function;
  */
 public class Polynom implements Function<Complex, Complex> {
 
-    public static Polynom EXAMPLE = new Polynom(
-            Complex.ofCartesian(-1 / 2.0, -Math.sqrt(3) / 2.0),
-            Complex.ofCartesian(-1 / 2.0, Math.sqrt(3) / 2.0),
-            Complex.REAL);
-    private Complex[] roots;
+    private double[] coefficients;
 
-    /**
-     * Constructs a Polynom using its roots.
-     *
-     * @param roots roots
-     */
-    public Polynom(Complex... roots) {
-        this.roots = roots;
+    public Polynom(double... coefficients) {
+        this.coefficients = coefficients;
     }
 
     @Override
     public Complex apply(Complex complex) {
-        Complex multiplication = Complex.REAL;
-        for (Complex root : roots) {
-            //multiply linear factors
-            Complex factor = complex.subtract(root);
-            multiplication = multiplication.multiply(factor);
+        Complex sum = Complex.ZERO;
+        for (int i = 0; i < this.coefficients.length; i++) {
+            Complex summand = complex.pow(i).multiply(this.coefficients[i]);
+            sum = sum.add(summand);
         }
-        return multiplication;
+        return sum;
     }
 
-    /**
-     * Gets the roots of the polynomial.
-     *
-     * @return roots
-     */
-    public Complex[] getRoots() {
-        return roots;
+    public double[] getCoefficients() {
+        return Arrays.copyOf(this.coefficients, this.coefficients.length);
     }
 
-    /**
-     * Sets the roots of the polynomial
-     *
-     * @param roots roots
-     */
-    public void setRoots(Complex[] roots) {
-        this.roots = roots;
+    public Polynom derivate() {
+        double[] derivative = new double[this.coefficients.length-1];
+        for (int i = 1; i < this.coefficients.length; i++) {
+            derivative[i - 1] = this.coefficients[i] * i;
+        }
+        return new Polynom(derivative);
     }
 }

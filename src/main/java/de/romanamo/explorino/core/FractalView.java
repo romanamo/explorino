@@ -314,7 +314,7 @@ public class FractalView implements Builder<Region> {
                 new Mandelbrot(10),
                 new Multibrot(10, 2),
                 new MultiJulia(10, 2, Complex.ofCartesian(0, 0)),
-                new Newton(10, Polynom.EXAMPLE));
+                new Newton(10, new Polynom(-1, 0, 0, 1)));
 
         return choiceBox;
     }
@@ -327,7 +327,6 @@ public class FractalView implements Builder<Region> {
         coloringMap.put("AbsColorization", new AbsColorization());
         coloringMap.put("ArgColorization", new ArgColorization(false));
         coloringMap.put("BasicColorization", new BasicColorization());
-        coloringMap.put("NewtonColorization", new NewtonColorization(Polynom.EXAMPLE));
         coloringMap.put("PaletteColorization", PaletteColorization.EXAMPLE);
 
 
@@ -366,12 +365,12 @@ public class FractalView implements Builder<Region> {
         });
 
         realSpinner.valueProperty().addListener((o, s1, s2) -> {
-            multiJulia.getParameter().setReal(s2);
+            multiJulia.setParameter(multiJulia.getParameter().changeReal(s2));
             this.state.updateDisplayChannel();
         });
 
         imagSpinner.valueProperty().addListener((o, s1, s2) -> {
-            multiJulia.getParameter().setImag(s2);
+            multiJulia.setParameter(multiJulia.getParameter().changeImag(s2));
             this.state.updateDisplayChannel();
         });
 

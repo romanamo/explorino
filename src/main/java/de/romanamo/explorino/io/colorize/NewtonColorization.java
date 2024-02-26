@@ -5,26 +5,31 @@ import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Polynom;
 import javafx.scene.paint.Color;
 
+import java.util.List;
+
 public class NewtonColorization implements Colorable {
 
     private Polynom polynom;
+
     public NewtonColorization(Polynom polynom) {
         this.polynom = polynom;
     }
+
     @Override
     public Color colorize(Evaluation evaluation) {
         Complex zn = evaluation.getEnd();
-
-        Complex[] roots = this.polynom.getRoots();
+        /*
+        List<Complex> roots = this.polynom.getRoots();
 
         int closestIndex = 0;
 
-        for (int i = 0; i < roots.length; i++) {
-            if(zn.distance(roots[i]) < zn.distance(roots[closestIndex])) {
+        for (int i = 0; i < roots.size(); i++) {
+            if (zn.distance(roots.get(i)) < zn.distance(roots.get(i))) {
                 closestIndex = i;
             }
         }
-        return Color.hsb(360 * closestIndex / (double) roots.length, 0.7, 1);
+        return Color.hsb(360 * closestIndex / (double) roots.size(), 0.7, 1);*/
+        return Color.hsb(0,0,0);
     }
 
     public void setPolynom(Polynom polynom) {

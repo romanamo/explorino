@@ -13,19 +13,29 @@ public class Complex {
 
     public static final Complex IMAG = new Complex(0, 1);
 
-    private double real;
+    private final double real;
 
-    private double imag;
+    private final double imag;
 
     /**
      * Constructs a complex number.
      *
-     * @param real      real part
+     * @param real real part
      * @param imag imaginary part
      */
     private Complex(double real, double imag) {
         this.real = real;
         this.imag = imag;
+    }
+
+    /**
+     * Constructs a complex number by copying.
+     *
+     * @param other complex number to copy
+     * @return copied number
+     */
+    public static Complex ofComplex(Complex other) {
+        return new Complex(other.real, other.imag);
     }
 
     /**
@@ -128,13 +138,12 @@ public class Complex {
         if (divisor.equals(Complex.ZERO)) {
             throw new ArithmeticException(String.format("Can not divide %s by zero", this));
         }
-        double dividedRadius = this.getRadius() / divisor.getRadius();
-        double subtractedAngle = this.getAngle() - divisor.getAngle();
 
-        double dividedReal = dividedRadius * Math.cos(subtractedAngle);
-        double dividedImaginary = dividedRadius * Math.sin(subtractedAngle);
+        double denominator = divisor.real * divisor.real + divisor.imag * divisor.imag;
+        double dividedReal = (this.real * divisor.real + this.imag * divisor.imag) / denominator;
+        double dividedImag = (this.imag * divisor.real - this.real * divisor.imag) / denominator;
 
-        return new Complex(dividedReal, dividedImaginary);
+        return new Complex(dividedReal, dividedImag);
     }
 
     /**
@@ -148,6 +157,19 @@ public class Complex {
         double imaginaryDifference = this.imag - other.imag;
 
         return Math.sqrt(realDifference * realDifference + imaginaryDifference * imaginaryDifference);
+    }
+
+    /**
+     * Calculates the squared Euclidean distance between 2 complex numbers a,b.
+     *
+     * @param other other
+     * @return squared distance between a, b
+     */
+    public double distanceSquared(Complex other) {
+        double realDifference = this.real - other.real;
+        double imaginaryDifference = this.imag - other.imag;
+
+        return realDifference * realDifference + imaginaryDifference * imaginaryDifference;
     }
 
     /**
@@ -262,46 +284,52 @@ public class Complex {
 
 
     /**
-     * Sets the angle of the complex number. As specified in polar form.
+     * Changes the angle of the complex number. As specified in polar form.
      *
      * @param angle angle in radians
+     * @return number with changed angle
      */
-    public void setAngle(double angle) {
+    public Complex changeAngle(double angle) {
         double oldRadius = this.getRadius();
 
-        this.real = oldRadius * Math.cos(angle);
-        this.imag = oldRadius * Math.sin(angle);
+        return new Complex(
+                oldRadius * Math.cos(angle),
+                oldRadius * Math.sin(angle));
     }
 
     /**
-     * Sets the radius of the complex number. As specified in polar form.
+     * Changes the radius of the complex number. As specified in polar form.
      *
      * @param radius positive radius
+     * @return number with changed radius
      */
-    public void setRadius(double radius) {
+    public Complex changeRadius(double radius) {
         double oldAngle = this.getAngle();
         double absRadius = Math.abs(radius);
 
-        this.real = absRadius * Math.cos(oldAngle);
-        this.imag = absRadius * Math.sin(oldAngle);
+        return new Complex(
+                absRadius * Math.cos(oldAngle),
+                absRadius * Math.sin(oldAngle));
     }
 
     /**
-     * Sets the real part of a complex number. As specified in cartesian form.
+     * Changes the real part of a complex number. As specified in cartesian form.
      *
      * @param real real part
+     * @return number with changed real part
      */
-    public void setReal(double real) {
-        this.real = real;
+    public Complex changeReal(double real) {
+        return new Complex(real, this.imag);
     }
 
     /**
-     * Sets the imaginary part of a complex number. As specified in cartesian form.
+     * Changes the imaginary part of a complex number. As specified in cartesian form.
      *
      * @param imag imaginary part
+     * @return number with changed imaginary part
      */
-    public void setImag(double imag) {
-        this.imag = imag;
+    public Complex changeImag(double imag) {
+        return new Complex(this.real, imag);
     }
 
     @Override

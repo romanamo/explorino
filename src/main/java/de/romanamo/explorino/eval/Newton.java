@@ -1,7 +1,7 @@
 package de.romanamo.explorino.eval;
 
 import de.romanamo.explorino.math.Complex;
-import de.romanamo.explorino.math.Numeric;
+import de.romanamo.explorino.math.Polynom;
 
 import java.util.function.Function;
 
@@ -10,25 +10,28 @@ import java.util.function.Function;
  */
 public class Newton extends Evaluator {
 
-    private final Function<Complex, Complex> function;
+    private final double TOLERANCE = 1e-5;
+    private final Polynom polynom;
+
+    private final Polynom derivative;
 
     /**
      * Constructs a Newton fractal.
      *
      * @param maxIteration maximum iteration of the evaluating process
-     * @param function     function to evaluate
+     * @param polynom      function to evaluate
      */
-    public Newton(int maxIteration, Function<Complex, Complex> function) {
+    public Newton(int maxIteration, Polynom polynom) {
         super(maxIteration);
-        this.function = function;
+        this.polynom = polynom;
+        this.derivative = polynom.derivate();
     }
 
     @Override
     public Function<Complex, Complex> function(Complex element) {
         return (z) -> {
-            Complex derivative = Numeric.differentiate(this.function, z, Complex.ofCartesian(1e-5, 1e-5));
-
-            Complex fraction = this.function.apply(z).divide(derivative);
+            Complex derivative = this.derivative.apply(z);
+            Complex fraction = this.polynom.apply(z).divide(derivative);
 
             return z.subtract(fraction);
         };
@@ -39,26 +42,21 @@ public class Newton extends Evaluator {
     public Evaluation evaluate(Complex element) {
         //set start values for the evaluating process
         int iteration = 0;
-        Complex num = this.initial(element);
         Function<Complex, Complex> function = this.function(element);
 
-        for (int i = 0; i < this.getMaxIteration(); i++) {
-            num = function.apply(num);
+        Complex current = this.initial(element);
+        Complex next = function.apply(current);
+
+        while (iteration < this.getMaxIteration() && current.distanceSquared(next) > TOLERANCE) {
+            current = next;
+            next = function.apply(next);
+            iteration++;
         }
-        return new Evaluation(element, num, iteration, this.getMaxIteration());
+        return new Evaluation(element, next, iteration, this.getMaxIteration());
     }
 
     @Override
     public Complex initial(Complex element) {
         return element;
-    }
-
-    /**
-     * Gets the function.
-     *
-     * @return function
-     */
-    public Function<Complex, Complex> getFunction() {
-        return function;
     }
 }

@@ -110,7 +110,7 @@ class ComplexTest {
     public void testSetAngle() {
         Complex a = Complex.ofCartesian(1, 0);
 
-        a.setAngle(Math.PI / 2);
+        a = a.changeAngle(Math.PI / 2);
 
         assertEquals(0, a.getReal(), EPSILON);
         assertEquals(1, a.getImag(), EPSILON);
@@ -120,7 +120,7 @@ class ComplexTest {
     public void testSetRadius() {
         Complex a = Complex.ofCartesian(1, 0);
 
-        a.setRadius(2);
+        a = a.changeRadius(2);
 
         assertEquals(2, a.getReal(), EPSILON);
         assertEquals(0, a.getImag(), EPSILON);

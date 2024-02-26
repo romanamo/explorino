@@ -44,11 +44,14 @@ public class PlaneFrame extends Plane {
                 Complex top = this.transformToPlane(new Point(x * tileGridSize.x, y * tileGridSize.y));
 
                 Complex tileSize = this.getTileSize().divide(this.zoom);
-                tileSize.setReal(tileSize.getReal() * singleWidth);
-                tileSize.setImag(tileSize.getImag() * singleHeight);
+
+                double adjustedReal = tileSize.getReal() * singleWidth;
+                double adjustedImag = tileSize.getImag() * singleHeight;
+
+                Complex adjustedTileSize = Complex.ofCartesian(adjustedReal, adjustedImag);
 
 
-                tileRaster[y][x] = new PlaneTile(new Point(singleWidth, singleHeight), tileSize, top);
+                tileRaster[y][x] = new PlaneTile(new Point(singleWidth, singleHeight), adjustedTileSize, top);
             }
         }
         return tileRaster;
