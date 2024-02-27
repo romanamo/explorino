@@ -11,9 +11,9 @@ import java.util.function.Function;
 public class Newton extends Evaluator {
 
     private final double TOLERANCE = 1e-5;
-    private final Polynom polynom;
+    private Polynom polynom;
 
-    private final Polynom derivative;
+    private Polynom derivative;
 
     /**
      * Constructs a Newton fractal.
@@ -58,5 +58,21 @@ public class Newton extends Evaluator {
     @Override
     public Complex initial(Complex element) {
         return element;
+    }
+
+    public Polynom getPolynom() {
+        return polynom;
+    }
+
+    public Polynom getDerivative() {
+        return derivative;
+    }
+
+    public void setPolynom(Polynom polynom) {
+        this.polynom = polynom;
+    }
+
+    public void setDerivative(Polynom derivative) {
+        this.derivative = derivative;
     }
 }

@@ -28,7 +28,7 @@ public class FractalDisplay extends ImageView {
         this.model = model;
         this.state = appmodel;
 
-        this.setImage(new WritableImage(600, 600));
+        this.setImage(new WritableImage(450, 450));
         this.setSmooth(false);
         this.setCache(true);
         this.setFocusTraversable(true);
@@ -104,8 +104,6 @@ public class FractalDisplay extends ImageView {
         }
         this.state.updateInfoChannel();
 
-        Grid grid = this.model.getPlane().compute(this.model.getEvaluator());
-
         double width = this.getImage().getWidth();
         double height = this.getImage().getHeight();
 
@@ -114,6 +112,7 @@ public class FractalDisplay extends ImageView {
 
         WritableImage wi = (WritableImage) this.getImage();
         PixelWriter pw = wi.getPixelWriter();
+        Grid grid = this.model.getPlane().compute(this.model.getEvaluator());
 
         for (int h = 0; h < (int) height; h++) {
             for (int w = 0; w < (int) width; w++) {

@@ -284,6 +284,8 @@ public class FractalView implements Builder<Region> {
             return createMultiBrotModifier((Multibrot) evaluator);
         } else if (evaluator instanceof MultiJulia) {
             return createMultiJuliaModifier((MultiJulia) evaluator);
+        } else if (evaluator instanceof Newton) {
+            return createNewtonModifier((Newton) evaluator);
         }
         return new Pane();
     }
@@ -314,7 +316,7 @@ public class FractalView implements Builder<Region> {
                 new Mandelbrot(10),
                 new Multibrot(10, 2),
                 new MultiJulia(10, 2, Complex.ofCartesian(0, 0)),
-                new Newton(10, new Polynom(-1, 0, 0, 1)));
+                new Newton(10, new Polynom(-1, 0, 0, 1, 2)));
 
         return choiceBox;
     }
@@ -407,5 +409,59 @@ public class FractalView implements Builder<Region> {
         return grid;
     }
 
+    public Region createNewtonModifier(Newton newton) {
+        VBox box = new VBox();
+
+        Polynom polynom = newton.getPolynom();
+        GridPane coefficientGrid = new GridPane();
+
+        for (int i = 0; i < polynom.getDegree(); i++) {
+            Spinner<Double> coefficientSpinner = createCoefficientModifier(i, newton);
+
+            coefficientGrid.addRow(i, coefficientSpinner);
+        }
+
+        HBox modifyBox = new HBox();
+
+        Button addButton = new Button("Add");
+        Button removeButton = new Button("Remove");
+
+        addButton.setOnMouseClicked(e -> {
+            polynom.addCoefficient();
+            int updatedIndex = polynom.getDegree() - 1;
+            coefficientGrid.addRow(updatedIndex, createCoefficientModifier(updatedIndex, newton));
+        });
+
+        removeButton.setOnMouseClicked(e -> {
+            int deleteIndex = polynom.getDegree() - 1;
+            polynom.popCoefficient();
+            coefficientGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == deleteIndex);
+            newton.setDerivative(newton.getPolynom().derivate());
+        });
+
+        modifyBox.getChildren().addAll(addButton, removeButton);
+
+        box.getChildren().addAll(coefficientGrid, modifyBox);
+
+        return box;
+    }
+
+    private Spinner<Double> createCoefficientModifier(int i, Newton newton) {
+        Polynom polynom = newton.getPolynom();
+
+        Spinner<Double> coefficientSpinner = new Spinner<>(-100.0, 100.0, polynom.getCoefficient(i), 1.0);
+        coefficientSpinner.setEditable(true);
+
+        coefficientSpinner.valueProperty().addListener((o, s1, s2) -> {
+            Polynom pol = newton.getPolynom();
+
+            pol.setCoefficient(i, s2);
+            newton.setDerivative(newton.getPolynom().derivate());
+
+            this.state.updateDisplayChannel();
+        });
+
+        return coefficientSpinner;
+    }
 
 }

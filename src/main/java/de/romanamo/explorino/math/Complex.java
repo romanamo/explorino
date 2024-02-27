@@ -7,10 +7,19 @@ import java.util.Objects;
  */
 public class Complex {
 
+    /**
+     * Zero
+     */
     public static final Complex ZERO = new Complex(0, 0);
 
+    /**
+     * One Real unit
+     */
     public static final Complex REAL = new Complex(1, 0);
 
+    /**
+     * One Imaginary unit
+     */
     public static final Complex IMAG = new Complex(0, 1);
 
     private final double real;

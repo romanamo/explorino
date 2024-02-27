@@ -37,7 +37,7 @@ public class Grid {
      * @param y y-index
      * @return evaluation at specified field
      */
-    public Evaluation getField(int x, int y) {
+    public synchronized Evaluation getField(int x, int y) {
         return this.grid[y][x];
     }
 
@@ -48,7 +48,7 @@ public class Grid {
      * @param y       y-index
      * @param content evaluation
      */
-    public void setField(int x, int y, Evaluation content) {
+    public synchronized void setField(int x, int y, Evaluation content) {
         this.grid[y][x] = content;
     }
 
@@ -59,7 +59,7 @@ public class Grid {
      * @param yInsert y-insertion index
      * @param grid    grid to insert
      */
-    public void insert(int xInsert, int yInsert, Grid grid) {
+    public synchronized void insert(int xInsert, int yInsert, Grid grid) {
         //TODO do validity copy checks
         for (int x = 0; x < grid.getWidth(); x++) {
             for (int y = 0; y < grid.getHeight(); y++) {
