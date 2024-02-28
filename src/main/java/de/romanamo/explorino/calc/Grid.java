@@ -2,6 +2,8 @@ package de.romanamo.explorino.calc;
 
 import de.romanamo.explorino.eval.Evaluation;
 
+import java.util.Arrays;
+
 /**
  * Class to represent a bundled collection of evaluations
  * in accessible grid form.
@@ -63,7 +65,7 @@ public class Grid {
         //TODO do validity copy checks
         for (int x = 0; x < grid.getWidth(); x++) {
             for (int y = 0; y < grid.getHeight(); y++) {
-                this.grid[y + yInsert][x + xInsert] = grid.getField(x, y);
+                this.grid[y + yInsert][x + xInsert] = grid.grid[y][x];
             }
         }
     }

@@ -1,8 +1,10 @@
 package de.romanamo.explorino.core.model;
 
+import de.romanamo.explorino.math.Point;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 public class State {
 

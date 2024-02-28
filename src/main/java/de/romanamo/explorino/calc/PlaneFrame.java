@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 public class PlaneFrame extends Plane {
@@ -79,7 +81,10 @@ public class PlaneFrame extends Plane {
         }
         executor.shutdown();
         try {
-            boolean state = executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            boolean state = executor.awaitTermination(64, TimeUnit.SECONDS);
+            if (!state) {
+                Log.LOGGER.warning("Failed Termination");
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted");
         }

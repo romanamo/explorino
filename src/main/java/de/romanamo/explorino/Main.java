@@ -17,7 +17,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         //configure logging
-        Log.LOGGER.setLevel(Level.FINEST);
+        Log.LOGGER.setLevel(Level.ALL);
         Log.LOGGER.info(String.format("Set Language to %s", Locale.getDefault().getDisplayLanguage()));
 
         FractalController controller = new FractalController(stage);

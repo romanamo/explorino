@@ -19,7 +19,7 @@ public class Model {
     private Plane plane =
             new PlaneFrame(
                     1.0,
-                    new Point(450, 450),
+                    new Point(400, 400),
                     Complex.ofCartesian(4, 4),
                     Complex.ZERO,
                     new Point(16, 16));

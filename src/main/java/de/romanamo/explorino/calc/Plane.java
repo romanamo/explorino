@@ -66,6 +66,10 @@ public abstract class Plane implements Computable, Transformable {
         return gridSize;
     }
 
+    public void setGridSize(Point gridSize) {
+        this.gridSize = gridSize;
+    }
+
     public void setPlaneOffset(Complex planeOffset) {
         this.planeOffset = planeOffset;
     }

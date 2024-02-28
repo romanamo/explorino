@@ -130,4 +130,6 @@ public class FractalDisplay extends ImageView {
 
         this.lastDraw.set(System.currentTimeMillis());
     }
+
+
 }

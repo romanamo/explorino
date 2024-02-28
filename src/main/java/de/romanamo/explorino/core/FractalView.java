@@ -10,12 +10,15 @@ import de.romanamo.explorino.gui.FractalDisplay;
 import de.romanamo.explorino.io.colorize.*;
 import de.romanamo.explorino.io.image.Export;
 import de.romanamo.explorino.math.Complex;
+import de.romanamo.explorino.math.Point;
 import de.romanamo.explorino.math.Polynom;
 import de.romanamo.explorino.util.I18n;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -34,10 +37,13 @@ public class FractalView implements Builder<Region> {
 
     private final State state;
 
-    public FractalView(Model model, State state, Stage stage) {
+    private final FractalDisplay display;
+
+    public FractalView(Model model, State state, Stage stage, FractalDisplay display) {
         this.model = model;
         this.state = state;
         this.stage = stage;
+        this.display = display;
     }
 
     @Override
@@ -60,14 +66,10 @@ public class FractalView implements Builder<Region> {
             }
         });
 
+        canvasPane.getChildren().addAll(this.display);
 
-        FractalDisplay fractalDisplay = new FractalDisplay(this.model, this.state);
-
-
-        canvasPane.getChildren().addAll(fractalDisplay);
-
-        fractalDisplay.fitWidthProperty().bind(canvasPane.widthProperty());
-        fractalDisplay.fitHeightProperty().bind(canvasPane.heightProperty());
+        this.display.fitWidthProperty().bind(canvasPane.widthProperty());
+        this.display.fitHeightProperty().bind(canvasPane.heightProperty());
 
         canvasPane.maxWidthProperty().bind(stage.widthProperty());
 
@@ -112,8 +114,6 @@ public class FractalView implements Builder<Region> {
         MenuItem menuFileExit = new MenuItem(I18n.getMessage("exit"));
 
         //actions
-        menuFileSettings.setOnAction(actionEvent -> openSettings());
-
         menuFileExit.setOnAction(e -> stage.close());
 
         menuFileExport.setOnAction(e -> {
@@ -181,16 +181,6 @@ public class FractalView implements Builder<Region> {
         return layout;
     }
 
-    private void openSettings() {
-        BorderPane layout = createSetting();
-
-        Stage stage = new Stage();
-        stage.setTitle(I18n.getMessage("settings"));
-        stage.setScene(new Scene(layout, 500, 500));
-
-        stage.show();
-    }
-
     private Region createInfoDisplay() {
         VBox box = new VBox();
 
@@ -221,6 +211,12 @@ public class FractalView implements Builder<Region> {
         Spinner<Double> realSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
         Spinner<Double> imagSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
 
+        Spinner<Integer> resWidthSpinner = new Spinner<>(1, 1000, 400, 1);
+        Spinner<Integer> resHeightSpinner = new Spinner<>(1, 1000, 400, 1);
+
+        resWidthSpinner.setEditable(true);
+        resHeightSpinner.setEditable(true);
+
         this.state.infoChannelProperty().addListener((o, s1, s2) -> {
             Plane plane = this.model.getPlane();
             Complex offset = plane.getPlaneOffset();
@@ -230,8 +226,25 @@ public class FractalView implements Builder<Region> {
             imagSpinner.getValueFactory().setValue(offset.getImag());
         });
 
-        grid.addRow(0, new Label(String.format("%s ", I18n.getMessage("zoom"))), zoomSpinner);
-        grid.addRow(1, new Label(String.format("%s ", I18n.getMessage("offset"))), realSpinner, imagSpinner);
+        resHeightSpinner.valueProperty().addListener((o, s1, s2) -> {
+            Plane plane = this.model.getPlane();
+            Point updated = new Point(plane.getGridSize().x, s2);
+            plane.setGridSize(updated);
+            this.display.setImage(new WritableImage(updated.x, updated.y));
+            this.state.updateDisplayChannel();
+        });
+
+        resWidthSpinner.valueProperty().addListener((o, s1, s2) -> {
+            Plane plane = this.model.getPlane();
+            Point updated = new Point(s2, plane.getGridSize().y);
+            plane.setGridSize(updated);
+            this.display.setImage(new WritableImage(updated.x, updated.y));
+            this.state.updateDisplayChannel();
+        });
+
+        grid.addRow(0, new Label(I18n.getMessage("zoom")), zoomSpinner);
+        grid.addRow(1, new Label(I18n.getMessage("offset")), realSpinner, imagSpinner);
+        grid.addRow(2, new Label("Resolution"), resWidthSpinner, resHeightSpinner);
 
         return grid;
     }
@@ -280,8 +293,8 @@ public class FractalView implements Builder<Region> {
     }
 
     public Region retrieveFractalModifier(Evaluator evaluator) {
-        if (evaluator instanceof Multibrot) {
-            return createMultiBrotModifier((Multibrot) evaluator);
+        if (evaluator instanceof MultiBrot) {
+            return createMultiBrotModifier((MultiBrot) evaluator);
         } else if (evaluator instanceof MultiJulia) {
             return createMultiJuliaModifier((MultiJulia) evaluator);
         } else if (evaluator instanceof Newton) {
@@ -314,7 +327,7 @@ public class FractalView implements Builder<Region> {
 
         choiceBox.getItems().addAll(
                 new Mandelbrot(10),
-                new Multibrot(10, 2),
+                new MultiBrot(10, 2),
                 new MultiJulia(10, 2, Complex.ofCartesian(0, 0)),
                 new Newton(10, new Polynom(-1, 0, 0, 1, 2)));
 
@@ -389,7 +402,7 @@ public class FractalView implements Builder<Region> {
      * @param multiBrot multi brot instance
      * @return modifier
      */
-    public Region createMultiBrotModifier(Multibrot multiBrot) {
+    public Region createMultiBrotModifier(MultiBrot multiBrot) {
         GridPane grid = new GridPane();
         grid.getColumnConstraints().add(new ColumnConstraints(50));
 
@@ -410,7 +423,6 @@ public class FractalView implements Builder<Region> {
     }
 
     public Region createNewtonModifier(Newton newton) {
-        VBox box = new VBox();
 
         Polynom polynom = newton.getPolynom();
         GridPane coefficientGrid = new GridPane();
@@ -421,29 +433,7 @@ public class FractalView implements Builder<Region> {
             coefficientGrid.addRow(i, coefficientSpinner);
         }
 
-        HBox modifyBox = new HBox();
-
-        Button addButton = new Button("Add");
-        Button removeButton = new Button("Remove");
-
-        addButton.setOnMouseClicked(e -> {
-            polynom.addCoefficient();
-            int updatedIndex = polynom.getDegree() - 1;
-            coefficientGrid.addRow(updatedIndex, createCoefficientModifier(updatedIndex, newton));
-        });
-
-        removeButton.setOnMouseClicked(e -> {
-            int deleteIndex = polynom.getDegree() - 1;
-            polynom.popCoefficient();
-            coefficientGrid.getChildren().removeIf(node -> GridPane.getRowIndex(node) == deleteIndex);
-            newton.setDerivative(newton.getPolynom().derivate());
-        });
-
-        modifyBox.getChildren().addAll(addButton, removeButton);
-
-        box.getChildren().addAll(coefficientGrid, modifyBox);
-
-        return box;
+        return coefficientGrid;
     }
 
     private Spinner<Double> createCoefficientModifier(int i, Newton newton) {
@@ -457,8 +447,6 @@ public class FractalView implements Builder<Region> {
 
             pol.setCoefficient(i, s2);
             newton.setDerivative(newton.getPolynom().derivate());
-
-            this.state.updateDisplayChannel();
         });
 
         return coefficientSpinner;

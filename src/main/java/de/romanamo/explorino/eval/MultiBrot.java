@@ -4,7 +4,7 @@ import de.romanamo.explorino.math.Complex;
 
 import java.util.function.Function;
 
-public class Multibrot extends Evaluator{
+public class MultiBrot extends Evaluator{
 
     private int degree;
 
@@ -13,7 +13,7 @@ public class Multibrot extends Evaluator{
      *
      * @param maxIteration maximum iteration of the evaluating process
      */
-    public Multibrot(int maxIteration, int degree) {
+    public MultiBrot(int maxIteration, int degree) {
         super(maxIteration);
         this.degree = degree;
     }
