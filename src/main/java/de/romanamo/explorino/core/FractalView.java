@@ -3,21 +3,17 @@ package de.romanamo.explorino.core;
 import de.romanamo.explorino.calc.Grid;
 import de.romanamo.explorino.calc.Plane;
 import de.romanamo.explorino.calc.PlaneFrame;
+import de.romanamo.explorino.color.*;
 import de.romanamo.explorino.core.model.Model;
 import de.romanamo.explorino.core.model.State;
 import de.romanamo.explorino.eval.*;
-import de.romanamo.explorino.gui.FractalDisplay;
-import de.romanamo.explorino.io.colorize.*;
-import de.romanamo.explorino.io.image.Export;
+import de.romanamo.explorino.io.Export;
 import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Point;
-import de.romanamo.explorino.math.Polynom;
+import de.romanamo.explorino.math.Polynomial;
 import de.romanamo.explorino.util.I18n;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -140,16 +136,9 @@ public class FractalView implements Builder<Region> {
     private Menu createHelpMenu() {
         Menu menuHelp = new Menu(I18n.getMessage("help"));
 
-        MenuItem menuHelpManual = new MenuItem(I18n.getMessage("manual"));
-        ImageView helpView = new ImageView("help.png");
+        MenuItem menuHelpLink = new MenuItem("Github");
 
-        helpView.setFitWidth(15);
-        helpView.setFitHeight(15);
-
-        menuHelpManual.setGraphic(helpView);
-        MenuItem menuHelpVersion = new MenuItem(I18n.getMessage("version"));
-
-        menuHelp.getItems().addAll(menuHelpManual, menuHelpVersion);
+        menuHelp.getItems().addAll(menuHelpLink);
 
         return menuHelp;
     }
@@ -163,22 +152,6 @@ public class FractalView implements Builder<Region> {
         menuView.getItems().addAll(menuViewItem);
 
         return menuView;
-    }
-
-    private BorderPane createSetting() {
-        BorderPane layout = new BorderPane();
-
-        TreeItem<String> rootItem = new TreeItem<>("Inbox");
-        rootItem.setExpanded(true);
-        for (int i = 1; i < 6; i++) {
-            TreeItem<String> item = new TreeItem<>("Message" + i);
-            rootItem.getChildren().add(item);
-        }
-        TreeView<String> tree = new TreeView<>(rootItem);
-
-        layout.setLeft(tree);
-        layout.getStylesheets().addAll("style.css");
-        return layout;
     }
 
     private Region createInfoDisplay() {
@@ -195,13 +168,15 @@ public class FractalView implements Builder<Region> {
                 createFractalInfo(),
                 createColorInfo()
         );
+
+        box.getStyleClass().add("info");
         return box;
     }
 
     public Region createPlaneInfo() {
         GridPane grid = new GridPane();
 
-        grid.getStyleClass().add("info");
+        grid.getStyleClass().add("option");
         grid.setHgap(8);
         grid.setVgap(8);
         grid.getColumnConstraints().addAll(new ColumnConstraints(64));
@@ -244,7 +219,7 @@ public class FractalView implements Builder<Region> {
 
         grid.addRow(0, new Label(I18n.getMessage("zoom")), zoomSpinner);
         grid.addRow(1, new Label(I18n.getMessage("offset")), realSpinner, imagSpinner);
-        grid.addRow(2, new Label("Resolution"), resWidthSpinner, resHeightSpinner);
+        grid.addRow(2, new Label(I18n.getMessage("resolution")), resWidthSpinner, resHeightSpinner);
 
         return grid;
     }
@@ -252,7 +227,7 @@ public class FractalView implements Builder<Region> {
     public Region createFractalInfo() {
         GridPane grid = new GridPane();
 
-        grid.getStyleClass().addAll("info");
+        grid.getStyleClass().addAll("option");
         grid.setHgap(8);
         grid.setVgap(8);
         grid.setPadding(new Insets(8));
@@ -283,11 +258,10 @@ public class FractalView implements Builder<Region> {
             grid.add(retrieveFractalModifier(this.model.getEvaluator()), 1, 3);
         });
 
-        grid.addRow(0, new Label("Iterations"), iterationSlider);
-        grid.addRow(1, new Label("Optimization"), optimizationCheckBox);
-        grid.addRow(2, new Label("Fractal"), createFractalChoice());
-        grid.add(new Label("Modifier"), 0, 3);
-        grid.add(new Pane(), 1, 3);
+        grid.addRow(0, new Label(I18n.getMessage("iterations")), iterationSlider);
+        grid.addRow(1, new Label(I18n.getMessage("optimization")), optimizationCheckBox);
+        grid.addRow(2, new Label(I18n.getMessage("fractal")), createFractalChoice());
+        grid.addRow(3, new Label(I18n.getMessage("modifiers")), new Pane());
 
         return grid;
     }
@@ -306,12 +280,12 @@ public class FractalView implements Builder<Region> {
     public Region createColorInfo() {
         GridPane grid = new GridPane();
 
-        grid.getStyleClass().addAll("info");
+        grid.getStyleClass().addAll("option");
         grid.setHgap(8);
         grid.setVgap(8);
         grid.setPadding(new Insets(8));
 
-        grid.addRow(0, new Label("Colorization"), createColorChoiceBox());
+        grid.addRow(0, new Label(I18n.getMessage("colorization")), createColorChoiceBox());
 
         return grid;
     }
@@ -329,7 +303,7 @@ public class FractalView implements Builder<Region> {
                 new Mandelbrot(10),
                 new MultiBrot(10, 2),
                 new MultiJulia(10, 2, Complex.ofCartesian(0, 0)),
-                new Newton(10, new Polynom(-1, 0, 0, 1, 2)));
+                new Newton(10, new Polynomial(-1, 0, 0, 1, 2)));
 
         return choiceBox;
     }
@@ -389,9 +363,9 @@ public class FractalView implements Builder<Region> {
             this.state.updateDisplayChannel();
         });
 
-        grid.addRow(0, new Label("Degree"), degreeSpinner);
-        grid.addRow(1, new Label("Real"), realSpinner);
-        grid.addRow(2, new Label("Imaginary"), imagSpinner);
+        grid.addRow(0, new Label(I18n.getMessage("degree")), degreeSpinner);
+        grid.addRow(1, new Label(I18n.getMessage("real")), realSpinner);
+        grid.addRow(2, new Label(I18n.getMessage("imaginary")), imagSpinner);
 
         return grid;
     }
@@ -417,36 +391,42 @@ public class FractalView implements Builder<Region> {
             this.state.updateDisplayChannel();
         });
 
-        grid.addRow(0, new Label("Degree"), degreeSpinner);
+        grid.addRow(0, new Label(I18n.getMessage("degree")), degreeSpinner);
 
         return grid;
     }
 
     public Region createNewtonModifier(Newton newton) {
 
-        Polynom polynom = newton.getPolynom();
-        GridPane coefficientGrid = new GridPane();
+        Polynomial polynomial = newton.getPolynom();
+        GridPane grid = new GridPane();
 
-        for (int i = 0; i < polynom.getDegree(); i++) {
+        grid.setHgap(8);
+        grid.setVgap(8);
+
+        for (int i = 0; i < polynomial.getDegree(); i++) {
             Spinner<Double> coefficientSpinner = createCoefficientModifier(i, newton);
 
-            coefficientGrid.addRow(i, coefficientSpinner);
+            grid.addRow(i,
+                    new Label(String.format("%d. %s", i, I18n.getMessage("coefficient"))), coefficientSpinner);
         }
 
-        return coefficientGrid;
+        return grid;
     }
 
     private Spinner<Double> createCoefficientModifier(int i, Newton newton) {
-        Polynom polynom = newton.getPolynom();
+        Polynomial polynomial = newton.getPolynom();
 
-        Spinner<Double> coefficientSpinner = new Spinner<>(-100.0, 100.0, polynom.getCoefficient(i), 1.0);
+        Spinner<Double> coefficientSpinner = new Spinner<>(-100.0, 100.0, polynomial.getCoefficients()[i], 1.0);
         coefficientSpinner.setEditable(true);
 
         coefficientSpinner.valueProperty().addListener((o, s1, s2) -> {
-            Polynom pol = newton.getPolynom();
+            Polynomial pol = newton.getPolynom();
 
-            pol.setCoefficient(i, s2);
+            pol.getCoefficients()[i] = s2;
             newton.setDerivative(newton.getPolynom().derivate());
+
+            this.state.updateDisplayChannel();
         });
 
         return coefficientSpinner;

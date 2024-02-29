@@ -1,4 +1,4 @@
-package de.romanamo.explorino.io.colorize;
+package de.romanamo.explorino.color;
 
 import de.romanamo.explorino.eval.Evaluation;
 import javafx.scene.paint.Color;

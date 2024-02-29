@@ -27,7 +27,7 @@ Resolution and Computation depth can be selected.
 
 Explorino supports following fractals:
 
-| Fractal              | Description                                  | Formal Description                                                                                         | Options                         |
+| Fractal              | Description                                  | Formal Definition                                                                                          | Options                         |
 |----------------------|----------------------------------------------|------------------------------------------------------------------------------------------------------------|---------------------------------|
 | Mandelbrot/Multibrot | https://en.wikipedia.org/wiki/Mandelbrot_set | $c \in \mathbb{C}, d \in \mathbb{N}$ where $f_{c}(z) = z^d + c$ does not diverge starting with $z=0$       | - degree                        |
 | Julia/Multijulia     | https://en.wikipedia.org/wiki/Julia_set      | $c,z \in \mathbb{C}, d \in \mathbb{N}$ where $f_{c}(z) = z^d + c$ does not diverge for a fixed parameter c | - degree<br>- parameter c       |

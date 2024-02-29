@@ -1,9 +1,9 @@
-package de.romanamo.explorino.gui;
+package de.romanamo.explorino.core;
 
 import de.romanamo.explorino.calc.Grid;
 import de.romanamo.explorino.core.model.State;
 import de.romanamo.explorino.core.model.Model;
-import de.romanamo.explorino.io.colorize.Colorable;
+import de.romanamo.explorino.color.Colorable;
 import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.util.Log;
 import javafx.scene.image.ImageView;

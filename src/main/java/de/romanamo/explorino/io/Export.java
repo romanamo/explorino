@@ -1,8 +1,8 @@
-package de.romanamo.explorino.io.image;
+package de.romanamo.explorino.io;
 
 import de.romanamo.explorino.calc.Grid;
 import de.romanamo.explorino.eval.Evaluation;
-import de.romanamo.explorino.io.colorize.Colorable;
+import de.romanamo.explorino.color.Colorable;
 import de.romanamo.explorino.util.Log;
 import javafx.scene.paint.Color;
 

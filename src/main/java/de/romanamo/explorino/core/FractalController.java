@@ -2,7 +2,6 @@ package de.romanamo.explorino.core;
 
 import de.romanamo.explorino.core.model.State;
 import de.romanamo.explorino.core.model.Model;
-import de.romanamo.explorino.gui.FractalDisplay;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Builder;

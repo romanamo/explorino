@@ -1,11 +1,58 @@
 * {
-    -fx-main-base : #2e2e2e;
-    -fx-secondary-base: #4a4a4a;
+    -fx-main-base: #2e2e2e;
+    -fx-secondary-base: #373737;
     -fx-text-base: #F1F1F1;
+    -fx-item-hover: #3761bd;
+}
+
+
+.menu-bar {
+    -fx-background-color: -fx-main-base;
+}
+
+.menu-item {
+    -fx-background-color: -fx-main-base;
+}
+
+.menu:hover {
+    -fx-background-color: -fx-item-hover;
+}
+
+.menu:showing {
+    -fx-background-color: -fx-item-hover;
+}
+
+.menu-item:focused {
+    -fx-background-color: -fx-item-hover;
+}
+
+.menu-bar:focused {
+    -fx-background-color: -fx-item-hover;
+}
+
+.context-menu {
+    -fx-padding: 0;
+}
+
+
+.label {
+    -fx-text-fill: -fx-text-base;
+}
+
+.option {
+    -fx-background-color: -fx-secondary-base;
 }
 
 .info {
-    -fx-background-color: #cacaca;
+    -fx-padding: 2px;
+    -fx-background-color: -fx-main-base;
 }
 
+.choice-box > .label {
+    -fx-text-fill: black;
+}
+
+.slider .axis {
+    -fx-tick-label-fill: -fx-text-base;
+}
 

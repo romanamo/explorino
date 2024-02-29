@@ -1,7 +1,7 @@
 package de.romanamo.explorino.eval;
 
 import de.romanamo.explorino.math.Complex;
-import de.romanamo.explorino.math.Polynom;
+import de.romanamo.explorino.math.Polynomial;
 
 import java.util.function.Function;
 
@@ -11,27 +11,27 @@ import java.util.function.Function;
 public class Newton extends Evaluator {
 
     private final double TOLERANCE = 1e-5;
-    private Polynom polynom;
+    private Polynomial polynomial;
 
-    private Polynom derivative;
+    private Polynomial derivative;
 
     /**
      * Constructs a Newton fractal.
      *
      * @param maxIteration maximum iteration of the evaluating process
-     * @param polynom      function to evaluate
+     * @param polynomial      function to evaluate
      */
-    public Newton(int maxIteration, Polynom polynom) {
+    public Newton(int maxIteration, Polynomial polynomial) {
         super(maxIteration);
-        this.polynom = polynom;
-        this.derivative = polynom.derivate();
+        this.polynomial = polynomial;
+        this.derivative = polynomial.derivate();
     }
 
     @Override
     public Function<Complex, Complex> function(Complex element) {
         return (z) -> {
             Complex derivative = this.derivative.apply(z);
-            Complex fraction = this.polynom.apply(z).divide(derivative);
+            Complex fraction = this.polynomial.apply(z).divide(derivative);
 
             return z.subtract(fraction);
         };
@@ -60,19 +60,19 @@ public class Newton extends Evaluator {
         return element;
     }
 
-    public Polynom getPolynom() {
-        return polynom;
+    public Polynomial getPolynom() {
+        return polynomial;
     }
 
-    public Polynom getDerivative() {
+    public Polynomial getDerivative() {
         return derivative;
     }
 
-    public void setPolynom(Polynom polynom) {
-        this.polynom = polynom;
+    public void setPolynom(Polynomial polynomial) {
+        this.polynomial = polynomial;
     }
 
-    public void setDerivative(Polynom derivative) {
+    public void setDerivative(Polynomial derivative) {
         this.derivative = derivative;
     }
 }

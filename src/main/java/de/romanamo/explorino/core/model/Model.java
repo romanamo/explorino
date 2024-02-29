@@ -4,8 +4,8 @@ import de.romanamo.explorino.calc.Plane;
 import de.romanamo.explorino.calc.PlaneFrame;
 import de.romanamo.explorino.eval.Evaluator;
 import de.romanamo.explorino.eval.Mandelbrot;
-import de.romanamo.explorino.io.colorize.Colorable;
-import de.romanamo.explorino.io.colorize.PaletteColorization;
+import de.romanamo.explorino.color.Colorable;
+import de.romanamo.explorino.color.PaletteColorization;
 import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Point;
 
