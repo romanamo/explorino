@@ -303,7 +303,8 @@ public class FractalView implements Builder<Region> {
                 new Mandelbrot(10),
                 new MultiBrot(10, 2),
                 new MultiJulia(10, 2, Complex.ofCartesian(0, 0)),
-                new Newton(10, new Polynomial(-1, 0, 0, 1, 2)));
+                new Newton(10, new Polynomial(-1, 0, 0, 1, 2)),
+                new Lyapunov(10, new int[]{0, 1}));
 
         return choiceBox;
     }

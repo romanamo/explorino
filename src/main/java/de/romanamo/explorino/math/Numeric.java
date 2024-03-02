@@ -19,7 +19,6 @@ public final class Numeric {
     public static Complex differentiate(Function<Complex, Complex> function, Complex x, Complex h) {
         Complex addedH = function.apply(x.add(h));
         Complex withoutH = function.apply(x);
-
         Complex numerator = addedH.subtract(withoutH);
         return numerator.divide(h);
     }
@@ -29,9 +28,18 @@ public final class Numeric {
      *
      * @param dividend dividend
      * @param divisor  divisor
-     * @return ceil(dividend/divisor)
+     * @return ceil(dividend / divisor)
      */
     public static long ceilDiv(long dividend, long divisor) {
         return -Math.floorDiv(-dividend, divisor);
+    }
+
+    public static double clamp(double x, double min, double max) {
+        if(x <= min) {
+            return min;
+        } else if (x >= max) {
+            return max;
+        }
+        return x;
     }
 }

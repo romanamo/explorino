@@ -256,6 +256,15 @@ public class Complex {
     }
 
     /**
+     * Converts the complex number into an array.
+     *
+     * @return array representation
+     */
+    public double[] toArray() {
+        return new double[]{this.real, this.imag};
+    }
+
+    /**
      * Gets the angle of a complex number. Needed for polar form.
      *
      * @return angle in radians
