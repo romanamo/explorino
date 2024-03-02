@@ -45,6 +45,14 @@ public class Lyapunov extends Evaluator {
                 this.getMaxIteration());
     }
 
+    public void setSequence(int[] sequence) {
+        this.sequence = sequence;
+    }
+
+    public int[] getSequence() {
+        return sequence;
+    }
+
     @Override
     public Function<Complex, Complex> function(Complex element) {
         throw new UnsupportedOperationException("Unused function");

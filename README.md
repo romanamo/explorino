@@ -27,11 +27,12 @@ Resolution and Computation depth can be selected.
 
 Explorino supports following fractals:
 
-| Fractal              | Description                                  | Formal Definition                                                                                          | Options                         |
-|----------------------|----------------------------------------------|------------------------------------------------------------------------------------------------------------|---------------------------------|
-| Mandelbrot/Multibrot | https://en.wikipedia.org/wiki/Mandelbrot_set | $c \in \mathbb{C}, d \in \mathbb{N}$ where $f_{c}(z) = z^d + c$ does not diverge starting with $z=0$       | - degree                        |
-| Julia/Multijulia     | https://en.wikipedia.org/wiki/Julia_set      | $c,z \in \mathbb{C}, d \in \mathbb{N}$ where $f_{c}(z) = z^d + c$ does not diverge for a fixed parameter c | - degree<br>- parameter c       |
-| Newton/Nova          | https://en.wikipedia.org/wiki/Newton_fractal | $p(z) \in \mathbb{C}[z]$ with $f(z) = z - a \dfrac{p(z)}{p'(z)} + c$ for fixed $a,c$                       | - up to 5 variable coefficients |
+| Fractal              | Description                                    | Formal Definition                                                                                                                               | Options                         |
+|----------------------|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
+| Mandelbrot/Multibrot | https://en.wikipedia.org/wiki/Mandelbrot_set   | $c \in \mathbb{C}, d \in \mathbb{N}$ where $f_{c}(z) = z^d + c$ does not diverge starting with $z=0$                                            | - degree                        |
+| Julia/Multijulia     | https://en.wikipedia.org/wiki/Julia_set        | $c,z \in \mathbb{C}, d \in \mathbb{N}$ where $f_{c}(z) = z^d + c$ does not diverge for a fixed parameter c                                      | - degree<br>- parameter c       |
+| Newton/Nova          | https://en.wikipedia.org/wiki/Newton_fractal   | $p(z) \in \mathbb{C}[z]$ with $f(z) = z - a \dfrac{p(z)}{p'(z)} + c$ for fixed $a,c$                                                            | - up to 5 variable coefficients |
+| Lyapunov             | https://en.wikipedia.org/wiki/Lyapunov_fractal | Calculate the Lyapunov-Exponent $\displaystyle \lambda = \lim_{N \rightarrow \infty} \dfrac{1}{N} \sum_{n=1} ^{N} \log\vert r_n (1-2x_n) \vert$ | - sequence                      |
 
 ### Coloring
 
@@ -46,10 +47,12 @@ Explorino supports following coloring methods:
 
 ## Gallery
 
-<img src="gallery/julia_gallery.png" alt="julia fractal">
-<img src="gallery/newton_gallery.png" alt="newton fractal">
-<img src="gallery/mandelbrot_gallery.png" alt="mandelbrot fractal">
-<img src="gallery/lyapunov_gallery.png" alt="lyapunov fractal">
+<p>
+<img src="gallery/julia_gallery.png" alt="julia fractal" width="45%">
+<img src="gallery/newton_gallery.png" alt="newton fractal" width="45%">
+<img src="gallery/mandelbrot_gallery.png" alt="mandelbrot fractal" width="45%">
+<img src="gallery/lyapunov_gallery.png" alt="lyapunov fractal" width="45%">
+</p>
 
 ## Built with
 

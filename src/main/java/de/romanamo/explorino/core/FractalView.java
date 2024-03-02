@@ -22,8 +22,6 @@ import javafx.util.Builder;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FractalView implements Builder<Region> {
 
@@ -46,7 +44,7 @@ public class FractalView implements Builder<Region> {
     public Region build() {
         BorderPane root = new BorderPane();
 
-        MenuBar menuBar = createMainMenuBar();
+        MenuBar menuBar = createMenuBar();
 
         Pane canvasPane = new Pane();
 
@@ -56,7 +54,7 @@ public class FractalView implements Builder<Region> {
 
         state.isSideInfoProperty().addListener(o -> {
             if (state.isSideInfoProperty().get()) {
-                root.setRight(createInfoDisplay());
+                root.setRight(createInfo());
             } else {
                 root.setRight(null);
             }
@@ -74,6 +72,11 @@ public class FractalView implements Builder<Region> {
         return root;
     }
 
+    /**
+     * Creates an export file chooser.
+     *
+     * @return file chooser
+     */
     private FileChooser createExportFileChooser() {
         FileChooser fileChooser = new FileChooser();
 
@@ -89,7 +92,12 @@ public class FractalView implements Builder<Region> {
         return fileChooser;
     }
 
-    private MenuBar createMainMenuBar() {
+    /**
+     * Creates menu bar.
+     *
+     * @return menu bar
+     */
+    private MenuBar createMenuBar() {
         MenuBar menuBar = new MenuBar();
 
         Menu menuFile = createFileMenu();
@@ -100,6 +108,11 @@ public class FractalView implements Builder<Region> {
         return menuBar;
     }
 
+    /**
+     * Creates file menu.
+     *
+     * @return file menu
+     */
     private Menu createFileMenu() {
         Menu menuFile = new Menu(I18n.getMessage("file"));
 
@@ -133,6 +146,11 @@ public class FractalView implements Builder<Region> {
         return menuFile;
     }
 
+    /**
+     * Creates help menu.
+     *
+     * @return help menu
+     */
     private Menu createHelpMenu() {
         Menu menuHelp = new Menu(I18n.getMessage("help"));
 
@@ -143,6 +161,11 @@ public class FractalView implements Builder<Region> {
         return menuHelp;
     }
 
+    /**
+     * Creates view menu.
+     *
+     * @return view menu
+     */
     private Menu createViewMenu() {
         Menu menuView = new Menu(I18n.getMessage("view"));
 
@@ -154,7 +177,12 @@ public class FractalView implements Builder<Region> {
         return menuView;
     }
 
-    private Region createInfoDisplay() {
+    /**
+     * Creates the side info panel.
+     *
+     * @return side info panel
+     */
+    private Region createInfo() {
         VBox box = new VBox();
 
         box.setMaxWidth(400);
@@ -173,6 +201,11 @@ public class FractalView implements Builder<Region> {
         return box;
     }
 
+    /**
+     * Creates an information panel about the plane.
+     *
+     * @return plane panel
+     */
     public Region createPlaneInfo() {
         GridPane grid = new GridPane();
 
@@ -224,6 +257,11 @@ public class FractalView implements Builder<Region> {
         return grid;
     }
 
+    /**
+     * Creates an information panel about fractals.
+     *
+     * @return fractal panel
+     */
     public Region createFractalInfo() {
         GridPane grid = new GridPane();
 
@@ -260,12 +298,18 @@ public class FractalView implements Builder<Region> {
 
         grid.addRow(0, new Label(I18n.getMessage("iterations")), iterationSlider);
         grid.addRow(1, new Label(I18n.getMessage("optimization")), optimizationCheckBox);
-        grid.addRow(2, new Label(I18n.getMessage("fractal")), createFractalChoice());
+        grid.addRow(2, new Label(I18n.getMessage("fractal")), createFractalChoiceBox());
         grid.addRow(3, new Label(I18n.getMessage("modifiers")), new Pane());
 
         return grid;
     }
 
+    /**
+     * Retrieves the matching fractal modifier.
+     *
+     * @param evaluator evaluator
+     * @return fitting modifier
+     */
     public Region retrieveFractalModifier(Evaluator evaluator) {
         if (evaluator instanceof MultiBrot) {
             return createMultiBrotModifier((MultiBrot) evaluator);
@@ -277,6 +321,11 @@ public class FractalView implements Builder<Region> {
         return new Pane();
     }
 
+    /**
+     * Creates an information panel about colorization.
+     *
+     * @return color panel
+     */
     public Region createColorInfo() {
         GridPane grid = new GridPane();
 
@@ -290,7 +339,12 @@ public class FractalView implements Builder<Region> {
         return grid;
     }
 
-    public ChoiceBox<Evaluator> createFractalChoice() {
+    /**
+     * Creates a choice box for fractals.
+     *
+     * @return fractal choice box
+     */
+    public ChoiceBox<Evaluator> createFractalChoiceBox() {
         ChoiceBox<Evaluator> choiceBox = new ChoiceBox<>();
 
         choiceBox.valueProperty().addListener((o, s1, s2) -> {
@@ -309,27 +363,29 @@ public class FractalView implements Builder<Region> {
         return choiceBox;
     }
 
-    public Region createColorChoiceBox() {
-        ChoiceBox<String> coloringChoiceBox = new ChoiceBox<>();
-
-        Map<String, Colorable> coloringMap = new HashMap<>();
-
-        coloringMap.put("AbsColorization", new AbsColorization());
-        coloringMap.put("ArgColorization", new ArgColorization(false));
-        coloringMap.put("BasicColorization", new BasicColorization());
-        coloringMap.put("PaletteColorization", PaletteColorization.EXAMPLE);
-
-
-        coloringChoiceBox.getItems().addAll(coloringMap.keySet());
+    /**
+     * Creates a choice box for coloring methods.
+     *
+     * @return coloring choice box
+     */
+    public ChoiceBox<Colorable> createColorChoiceBox() {
+        ChoiceBox<Colorable> coloringChoiceBox = new ChoiceBox<>();
 
         coloringChoiceBox.setOnAction(e -> {
-            Colorable newColoring = coloringMap.get(coloringChoiceBox.getValue());
-
-            if (newColoring != null) {
-                this.model.setColorization(newColoring);
+            Colorable selected = coloringChoiceBox.getValue();
+            if (selected != null) {
+                this.model.setColorization(selected);
             }
             this.state.updateDisplayChannel();
         });
+
+        coloringChoiceBox.getItems().addAll(
+                new AbsColorization(),
+                new ArgColorization(false),
+                new BasicColorization(),
+                PaletteColorization.EXAMPLE
+        );
+
         return coloringChoiceBox;
     }
 
@@ -397,6 +453,12 @@ public class FractalView implements Builder<Region> {
         return grid;
     }
 
+    /**
+     * Creates a Modifier for Newton fractals.
+     *
+     * @param newton newton instance
+     * @return modifier
+     */
     public Region createNewtonModifier(Newton newton) {
 
         Polynomial polynomial = newton.getPolynom();
@@ -415,6 +477,13 @@ public class FractalView implements Builder<Region> {
         return grid;
     }
 
+    /**
+     * Creates a helper Modifier for Newton fractals.
+     *
+     * @param i      index
+     * @param newton newton instance
+     * @return modifier
+     */
     private Spinner<Double> createCoefficientModifier(int i, Newton newton) {
         Polynomial polynomial = newton.getPolynom();
 

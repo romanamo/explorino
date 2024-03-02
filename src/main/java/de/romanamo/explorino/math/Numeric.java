@@ -34,8 +34,16 @@ public final class Numeric {
         return -Math.floorDiv(-dividend, divisor);
     }
 
+    /**
+     * Clamps the value between min and max.
+     *
+     * @param x   value to clamp.
+     * @param min minimum bounds
+     * @param max maximum bounds
+     * @return clamped value
+     */
     public static double clamp(double x, double min, double max) {
-        if(x <= min) {
+        if (x <= min) {
             return min;
         } else if (x >= max) {
             return max;
