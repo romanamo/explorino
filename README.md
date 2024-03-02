@@ -49,6 +49,7 @@ Explorino supports following coloring methods:
 <img src="gallery/julia_gallery.png" alt="julia fractal">
 <img src="gallery/newton_gallery.png" alt="newton fractal">
 <img src="gallery/mandelbrot_gallery.png" alt="mandelbrot fractal">
+<img src="gallery/lyapunov_gallery.png" alt="lyapunov fractal">
 
 ## Built with
 
