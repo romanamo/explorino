@@ -215,7 +215,7 @@ public class FractalView implements Builder<Region> {
         grid.getColumnConstraints().addAll(new ColumnConstraints(64));
         grid.setPadding(new Insets(8));
 
-        Spinner<Double> zoomSpinner = new Spinner<>(0, Double.MAX_VALUE, 10);
+        Spinner<Double> zoomSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 10);
         Spinner<Double> realSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
         Spinner<Double> imagSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
 
@@ -270,7 +270,7 @@ public class FractalView implements Builder<Region> {
         grid.setVgap(8);
         grid.setPadding(new Insets(8));
 
-        Slider iterationSlider = new Slider(0, 200, 1);
+        Slider iterationSlider = new Slider(0, 200, this.model.getEvaluator().getMaxIteration());
         CheckBox optimizationCheckBox = new CheckBox();
 
         iterationSlider.setShowTickLabels(true);
@@ -317,6 +317,8 @@ public class FractalView implements Builder<Region> {
             return createMultiJuliaModifier((MultiJulia) evaluator);
         } else if (evaluator instanceof Newton) {
             return createNewtonModifier((Newton) evaluator);
+        } else if (evaluator instanceof Lyapunov) {
+            return createLyapunovModifier((Lyapunov) evaluator);
         }
         return new Pane();
     }
@@ -347,7 +349,9 @@ public class FractalView implements Builder<Region> {
     public ChoiceBox<Evaluator> createFractalChoiceBox() {
         ChoiceBox<Evaluator> choiceBox = new ChoiceBox<>();
 
+        choiceBox.setValue(this.model.getEvaluator());
         choiceBox.valueProperty().addListener((o, s1, s2) -> {
+            s2.setMaxIteration(this.model.getEvaluator().getMaxIteration());
             this.model.setEvaluator(s2);
             this.state.updateInfoChannel();
             this.state.updateDisplayChannel();
@@ -370,6 +374,7 @@ public class FractalView implements Builder<Region> {
      */
     public ChoiceBox<Colorable> createColorChoiceBox() {
         ChoiceBox<Colorable> coloringChoiceBox = new ChoiceBox<>();
+        coloringChoiceBox.setValue(this.model.getColorization());
 
         coloringChoiceBox.setOnAction(e -> {
             Colorable selected = coloringChoiceBox.getValue();
@@ -442,13 +447,38 @@ public class FractalView implements Builder<Region> {
 
         Spinner<Integer> degreeSpinner = new Spinner<>(0, 32, multiBrot.getDegree());
         degreeSpinner.setEditable(true);
-
         degreeSpinner.valueProperty().addListener((o, s1, s2) -> {
             multiBrot.setDegree(s2);
             this.state.updateDisplayChannel();
         });
 
         grid.addRow(0, new Label(I18n.getMessage("degree")), degreeSpinner);
+
+        return grid;
+    }
+
+    /**
+     * Creates a Modifier for Lyapunov fractals.
+     *
+     * @param lyapunov lyapunov instance
+     * @return modifier
+     */
+    public Region createLyapunovModifier(Lyapunov lyapunov) {
+        GridPane grid = new GridPane();
+        grid.getColumnConstraints().add(new ColumnConstraints(50));
+
+        grid.setHgap(8);
+        grid.setVgap(8);
+
+        TextField sequenceField = new TextField(Lyapunov.indicesToSequence(lyapunov.getSequence()));
+
+        sequenceField.setOnAction(event -> {
+                    lyapunov.setSequence(Lyapunov.sequenceToIndices(sequenceField.getText()));
+                    sequenceField.setText(sequenceField.getText());
+                    this.state.updateDisplayChannel();
+                });
+
+        grid.addRow(0, new Label(I18n.getMessage("sequence")), sequenceField);
 
         return grid;
     }

@@ -39,7 +39,7 @@ public class FractalDisplay extends ImageView {
         this.setOnScroll(scrollEvent -> {
             double zoom = this.model.getPlane().getZoom();
 
-            this.model.getPlane().setZoom(zoom + scrollEvent.getDeltaY() * 0.01 * zoom);
+            this.model.getPlane().setZoom(zoom + scrollEvent.getDeltaY() * 0.007 * zoom);
 
             this.draw();
         });

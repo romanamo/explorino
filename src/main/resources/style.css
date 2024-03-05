@@ -5,6 +5,10 @@
     -fx-item-hover: #3761bd;
 }
 
+.context-menu > * > .separator > .line {
+    -fx-border-color: -fx-secondary-base;
+    -fx-border-insets: 0;
+}
 
 .menu-bar {
     -fx-background-color: -fx-main-base;
@@ -55,4 +59,3 @@
 .slider .axis {
     -fx-tick-label-fill: -fx-text-base;
 }
-

@@ -55,7 +55,7 @@ public abstract class Plane implements Computable, Transformable {
     }
 
     public void setZoom(double zoom) {
-        this.zoom = zoom;
+        this.zoom = Math.abs(zoom);
     }
 
     public Complex getPlaneOffset() {
