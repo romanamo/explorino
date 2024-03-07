@@ -5,17 +5,17 @@ import java.util.Objects;
 /**
  * Class to represent a point in 2D-Space.
  */
-public class Point {
+public final class Point {
 
     /**
-     * x-coordinate
+     * x-coordinate.
      */
-    public int x;
+    private int x;
 
     /**
-     * y-coordinate
+     * y-coordinate.
      */
-    public int y;
+    private int y;
 
     /**
      * Constructs a point with coordinates.
@@ -28,10 +28,50 @@ public class Point {
         this.y = y;
     }
 
+    /**
+     * Gets the x-coordinate.
+     *
+     * @return x-coordinate
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * Sets the x-coordinate.
+     *
+     * @param x x-coordinate
+     */
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    /**
+     * Gets the y-coordinate.
+     *
+     * @return y-coordinate
+     */
+    public int getY() {
+        return y;
+    }
+
+    /**
+     * Sets the y-coordinate.
+     *
+     * @param y y-coordinate
+     */
+    public void setY(int y) {
+        this.y = y;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Point point = (Point) o;
         return x == point.x && y == point.y;
     }

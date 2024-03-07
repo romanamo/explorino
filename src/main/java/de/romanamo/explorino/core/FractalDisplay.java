@@ -107,8 +107,8 @@ public class FractalDisplay extends ImageView {
         double width = this.getImage().getWidth();
         double height = this.getImage().getHeight();
 
-        int imageWidth = this.model.getPlane().getGridSize().x;
-        int imageHeight = this.model.getPlane().getGridSize().y;
+        int imageWidth = this.model.getPlane().getGridSize().getX();
+        int imageHeight = this.model.getPlane().getGridSize().getY();
 
         WritableImage wi = (WritableImage) this.getImage();
         PixelWriter pw = wi.getPixelWriter();

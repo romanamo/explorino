@@ -7,6 +7,10 @@ import java.util.function.Function;
  */
 public final class Numeric {
 
+    private Numeric() {
+
+    }
+
     /**
      * Approximates the difference quotient for a complex valued function on x,
      * using a sufficiently small delta h.

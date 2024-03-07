@@ -32,7 +32,7 @@ public abstract class Evaluator {
      */
     public Evaluator(int maxIteration) {
         this.setMaxIteration(maxIteration);
-        this.setEscapeCondition(c -> c.distance(Complex.ZERO) > 2);
+        this.setEscapeCondition(c -> c.distanceSquared(Complex.ZERO) > 4);
 
     }
 

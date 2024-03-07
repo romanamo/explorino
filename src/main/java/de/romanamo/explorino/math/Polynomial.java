@@ -8,14 +8,17 @@ import java.util.stream.IntStream;
 /**
  * Class to represent a polynomial function.
  */
-public class Polynomial implements Function<Complex, Complex> {
+public final class Polynomial implements Function<Complex, Complex> {
 
+    /**
+     * Coefficients of the polynomial.
+     */
     private final double[] coefficients;
 
     /**
-     * Constructs a polynom by coefficients.
+     * Constructs a polynom by its coefficients.
      *
-     * @param coefficients coefficient
+     * @param coefficients coefficients
      */
     public Polynomial(double... coefficients) {
         this.coefficients = coefficients;
@@ -25,8 +28,11 @@ public class Polynomial implements Function<Complex, Complex> {
     public Complex apply(Complex complex) {
         Complex sum = Complex.ZERO;
         for (int i = 0; i < this.coefficients.length; i++) {
-            Complex summand = complex.pow(i).multiply(this.coefficients[i]);
-            sum = sum.add(summand);
+            //performance optimization by not computing complex powers
+            if (this.coefficients[i] != 0) {
+                Complex summand = complex.pow(i).multiply(this.coefficients[i]);
+                sum = sum.add(summand);
+            }
         }
         return sum;
     }

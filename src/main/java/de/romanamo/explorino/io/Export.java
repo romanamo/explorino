@@ -1,8 +1,8 @@
 package de.romanamo.explorino.io;
 
 import de.romanamo.explorino.calc.Grid;
-import de.romanamo.explorino.eval.Evaluation;
 import de.romanamo.explorino.color.Colorization;
+import de.romanamo.explorino.eval.Evaluation;
 import de.romanamo.explorino.util.Log;
 import javafx.scene.paint.Color;
 
@@ -11,7 +11,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class Export {
+public final class Export {
+
+    private Export() {
+
+    }
 
     public static String getFileExtension(File file) {
         String name = file.getName();
@@ -22,7 +26,7 @@ public class Export {
         return name.substring(lastIndexOf + 1);
     }
 
-    public static void saveToImageFile(BufferedImage image, File file) {
+    public static void saveImageToFile(BufferedImage image, File file) {
         String fileExtension = getFileExtension(file);
 
         try {
@@ -46,8 +50,7 @@ public class Export {
         }
     }
 
-
-    public static BufferedImage gridToImage(Grid grid, Colorization coloring) {
+    public static BufferedImage writeGridToImage(Grid grid, Colorization coloring) {
         BufferedImage image = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         for (int i = 0; i < grid.getWidth(); i++) {

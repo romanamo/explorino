@@ -46,9 +46,8 @@ public class PaletteColorization extends Colorization {
                 double x = (Math.cos(ratio * Math.PI + Math.PI) + 1.0) / 2.0;
 
                 return this.retrieve((int) (x * this.palette.size() * 3));
-            } else {
-                return this.retrieve(i);
             }
+            return this.retrieve(i);
 
         }
         return Color.hsb(0, 0, 0);

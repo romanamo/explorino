@@ -135,8 +135,8 @@ public class FractalView implements Builder<Region> {
             File file = fileChooser.showSaveDialog(this.stage);
 
             if (file != null) {
-                BufferedImage bufferedImage = Export.gridToImage(grid, coloring);
-                Export.saveToImageFile(bufferedImage, file);
+                BufferedImage bufferedImage = Export.writeGridToImage(grid, coloring);
+                Export.saveImageToFile(bufferedImage, file);
             }
 
         });
@@ -223,8 +223,8 @@ public class FractalView implements Builder<Region> {
         Spinner<Double> realSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, offset.getReal());
         Spinner<Double> imagSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, offset.getImag());
 
-        Spinner<Integer> resWidthSpinner = new Spinner<>(1, 1000, resolution.x, 1);
-        Spinner<Integer> resHeightSpinner = new Spinner<>(1, 1000, resolution.y, 1);
+        Spinner<Integer> resWidthSpinner = new Spinner<>(1, 1000, resolution.getX(), 1);
+        Spinner<Integer> resHeightSpinner = new Spinner<>(1, 1000, resolution.getY(), 1);
 
         resWidthSpinner.setEditable(true);
         resHeightSpinner.setEditable(true);
@@ -240,17 +240,17 @@ public class FractalView implements Builder<Region> {
 
         resHeightSpinner.valueProperty().addListener((o, s1, s2) -> {
             Plane plane = this.model.getPlane();
-            Point updated = new Point(plane.getGridSize().x, s2);
+            Point updated = new Point(plane.getGridSize().getX(), s2);
             plane.setGridSize(updated);
-            this.display.setImage(new WritableImage(updated.x, updated.y));
+            this.display.setImage(new WritableImage(updated.getX(), updated.getY()));
             this.state.updateDisplayChannel();
         });
 
         resWidthSpinner.valueProperty().addListener((o, s1, s2) -> {
             Plane plane = this.model.getPlane();
-            Point updated = new Point(s2, plane.getGridSize().y);
+            Point updated = new Point(s2, plane.getGridSize().getY());
             plane.setGridSize(updated);
-            this.display.setImage(new WritableImage(updated.x, updated.y));
+            this.display.setImage(new WritableImage(updated.getX(), updated.getY()));
             this.state.updateDisplayChannel();
         });
 

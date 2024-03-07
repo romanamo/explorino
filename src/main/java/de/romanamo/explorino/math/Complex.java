@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Class to represent complex numbers.
  */
-public class Complex {
+public final class Complex {
 
     /**
      * Zero.
@@ -22,8 +22,14 @@ public class Complex {
      */
     public static final Complex IMAG = new Complex(0, 1);
 
+    /**
+     * Internal real part.
+     */
     private final double real;
 
+    /**
+     * Internal imaginary .
+     */
     private final double imag;
 
     /**
@@ -206,6 +212,8 @@ public class Complex {
                 return this;
             case 2:
                 return this.multiply(this);
+            case 3:
+                return this.multiply(this).multiply(this);
             default:
                 //do expensive calculation
                 double poweredRadius = Math.pow(this.getRadius(), exponent);
@@ -358,8 +366,12 @@ public class Complex {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Complex complex = (Complex) o;
         return Double.compare(real, complex.real) == 0 && Double.compare(imag, complex.imag) == 0;
     }
