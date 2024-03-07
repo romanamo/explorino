@@ -4,7 +4,7 @@ import de.romanamo.explorino.calc.Plane;
 import de.romanamo.explorino.calc.PlaneFrame;
 import de.romanamo.explorino.eval.Evaluator;
 import de.romanamo.explorino.eval.Mandelbrot;
-import de.romanamo.explorino.color.Colorable;
+import de.romanamo.explorino.color.Colorization;
 import de.romanamo.explorino.color.PaletteColorization;
 import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Point;
@@ -24,7 +24,7 @@ public class Model {
                     Complex.ZERO,
                     new Point(16, 16));
 
-    private Colorable colorization = PaletteColorization.EXAMPLE;
+    private Colorization colorization = PaletteColorization.EXAMPLE;
 
 
     public Plane getPlane() {
@@ -35,7 +35,7 @@ public class Model {
         return evaluator;
     }
 
-    public Colorable getColorization() {
+    public Colorization getColorization() {
         return colorization;
     }
 
@@ -43,7 +43,7 @@ public class Model {
         this.evaluator = evaluator;
     }
 
-    public void setColorization(Colorable colorization) {
+    public void setColorization(Colorization colorization) {
         this.colorization = colorization;
     }
 

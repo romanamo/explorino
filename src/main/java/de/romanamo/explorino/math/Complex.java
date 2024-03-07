@@ -8,17 +8,17 @@ import java.util.Objects;
 public class Complex {
 
     /**
-     * Zero
+     * Zero.
      */
     public static final Complex ZERO = new Complex(0, 0);
 
     /**
-     * One Real unit
+     * One Real unit.
      */
     public static final Complex REAL = new Complex(1, 0);
 
     /**
-     * One Imaginary unit
+     * One Imaginary unit.
      */
     public static final Complex IMAG = new Complex(0, 1);
 
@@ -341,7 +341,8 @@ public class Complex {
     }
 
     /**
-     * Changes the imaginary part of a complex number. As specified in cartesian form.
+     * Changes the imaginary part of a complex number.
+     * As specified in cartesian form.
      *
      * @param imag imaginary part
      * @return number with changed imaginary part

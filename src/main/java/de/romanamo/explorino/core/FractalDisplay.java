@@ -3,7 +3,7 @@ package de.romanamo.explorino.core;
 import de.romanamo.explorino.calc.Grid;
 import de.romanamo.explorino.core.model.State;
 import de.romanamo.explorino.core.model.Model;
-import de.romanamo.explorino.color.Colorable;
+import de.romanamo.explorino.color.Colorization;
 import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.util.Log;
 import javafx.scene.image.ImageView;
@@ -121,10 +121,10 @@ public class FractalDisplay extends ImageView {
                 relX = Math.min(relX, imageWidth - 1);
                 relY = Math.min(relY, imageHeight - 1);
 
-                Colorable colorable = this.model.getColorization();
+                Colorization colorization = this.model.getColorization();
 
                 //set pixel
-                pw.setColor(w, h, colorable.colorize(grid.getField(relX, relY)));
+                pw.setColor(w, h, colorization.colorize(grid.getField(relX, relY)));
             }
         }
 

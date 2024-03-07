@@ -10,6 +10,12 @@ public class Lyapunov extends Evaluator {
 
     private int[] sequence;
 
+    /**
+     * Constructs the Lyapunov fractal.
+     *
+     * @param maxIteration maximum iteration of the evaluating process
+     * @param sequence alphabetic sequence
+     */
     public Lyapunov(int maxIteration, int[] sequence) {
         super(maxIteration);
         this.sequence = sequence;
@@ -74,12 +80,12 @@ public class Lyapunov extends Evaluator {
                 this.getMaxIteration());
     }
 
-    public void setSequence(int[] sequence) {
-        this.sequence = sequence;
-    }
-
     public int[] getSequence() {
         return sequence;
+    }
+
+    public void setSequence(int[] sequence) {
+        this.sequence = sequence;
     }
 
     @Override

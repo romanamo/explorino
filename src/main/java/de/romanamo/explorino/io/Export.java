@@ -2,7 +2,7 @@ package de.romanamo.explorino.io;
 
 import de.romanamo.explorino.calc.Grid;
 import de.romanamo.explorino.eval.Evaluation;
-import de.romanamo.explorino.color.Colorable;
+import de.romanamo.explorino.color.Colorization;
 import de.romanamo.explorino.util.Log;
 import javafx.scene.paint.Color;
 
@@ -47,7 +47,7 @@ public class Export {
     }
 
 
-    public static BufferedImage gridToImage(Grid grid, Colorable coloring) {
+    public static BufferedImage gridToImage(Grid grid, Colorization coloring) {
         BufferedImage image = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         for (int i = 0; i < grid.getWidth(); i++) {

@@ -130,7 +130,7 @@ public class FractalView implements Builder<Region> {
 
             Evaluator evaluator = this.model.getEvaluator();
             Grid grid = this.model.getPlane().compute(evaluator);
-            Colorable coloring = this.model.getColorization();
+            Colorization coloring = this.model.getColorization();
 
             File file = fileChooser.showSaveDialog(this.stage);
 
@@ -215,23 +215,27 @@ public class FractalView implements Builder<Region> {
         grid.getColumnConstraints().addAll(new ColumnConstraints(64));
         grid.setPadding(new Insets(8));
 
-        Spinner<Double> zoomSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 10);
-        Spinner<Double> realSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
-        Spinner<Double> imagSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
+        double zoom = this.model.getPlane().getZoom();
+        Complex offset = this.model.getPlane().getPlaneOffset();
+        Point resolution = this.model.getPlane().getGridSize();
 
-        Spinner<Integer> resWidthSpinner = new Spinner<>(1, 1000, 400, 1);
-        Spinner<Integer> resHeightSpinner = new Spinner<>(1, 1000, 400, 1);
+        Spinner<Double> zoomSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, zoom);
+        Spinner<Double> realSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, offset.getReal());
+        Spinner<Double> imagSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, offset.getImag());
+
+        Spinner<Integer> resWidthSpinner = new Spinner<>(1, 1000, resolution.x, 1);
+        Spinner<Integer> resHeightSpinner = new Spinner<>(1, 1000, resolution.y, 1);
 
         resWidthSpinner.setEditable(true);
         resHeightSpinner.setEditable(true);
 
         this.state.infoChannelProperty().addListener((o, s1, s2) -> {
             Plane plane = this.model.getPlane();
-            Complex offset = plane.getPlaneOffset();
+            Complex offsets = plane.getPlaneOffset();
 
             zoomSpinner.getValueFactory().setValue(plane.getZoom());
-            realSpinner.getValueFactory().setValue(offset.getReal());
-            imagSpinner.getValueFactory().setValue(offset.getImag());
+            realSpinner.getValueFactory().setValue(offsets.getReal());
+            imagSpinner.getValueFactory().setValue(offsets.getImag());
         });
 
         resHeightSpinner.valueProperty().addListener((o, s1, s2) -> {
@@ -273,6 +277,7 @@ public class FractalView implements Builder<Region> {
         Slider iterationSlider = new Slider(0, 200, this.model.getEvaluator().getMaxIteration());
         CheckBox optimizationCheckBox = new CheckBox();
 
+        optimizationCheckBox.setSelected(false);
         iterationSlider.setShowTickLabels(true);
         iterationSlider.setMaxWidth(Double.MAX_VALUE);
         iterationSlider.setValue(this.model.getEvaluator().getMaxIteration());
@@ -324,6 +329,44 @@ public class FractalView implements Builder<Region> {
     }
 
     /**
+     * Retrieves the matching color modifier.
+     *
+     * @param colorization colorization
+     * @return fitting modifier
+     */
+    public Region retrieveColorableModifier(Colorization colorization) {
+        if (colorization instanceof InvertibleColorization) {
+            return createInvertibleModifier((InvertibleColorization) colorization);
+        }
+        return new Pane();
+    }
+
+    /**
+     * Creates a Modifier for {@link InvertibleColorization}.
+     *
+     * @param invertibleColorization invertible colorization
+     * @return modifier
+     */
+    private Region createInvertibleModifier(InvertibleColorization invertibleColorization) {
+        GridPane grid = new GridPane();
+
+        grid.setHgap(8);
+        grid.setVgap(8);
+
+        CheckBox checkBox = new CheckBox();
+
+        checkBox.setSelected(invertibleColorization.getInverted());
+
+        checkBox.selectedProperty().addListener((o, s1, s2) -> {
+            invertibleColorization.setInverted(s2);
+            this.state.updateDisplayChannel();
+        });
+
+        grid.addRow(0, new Label(I18n.getMessage("inverted")), checkBox);
+        return grid;
+    }
+
+    /**
      * Creates an information panel about colorization.
      *
      * @return color panel
@@ -336,7 +379,13 @@ public class FractalView implements Builder<Region> {
         grid.setVgap(8);
         grid.setPadding(new Insets(8));
 
+        this.state.infoChannelProperty().addListener((o, s1, s2) -> {
+            grid.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+            grid.add(retrieveColorableModifier(this.model.getColorization()), 1, 1);
+        });
+
         grid.addRow(0, new Label(I18n.getMessage("colorization")), createColorChoiceBox());
+        grid.addRow(1, new Label(I18n.getMessage("modifiers")), new Pane());
 
         return grid;
     }
@@ -372,12 +421,12 @@ public class FractalView implements Builder<Region> {
      *
      * @return coloring choice box
      */
-    public ChoiceBox<Colorable> createColorChoiceBox() {
-        ChoiceBox<Colorable> coloringChoiceBox = new ChoiceBox<>();
+    public ChoiceBox<Colorization> createColorChoiceBox() {
+        ChoiceBox<Colorization> coloringChoiceBox = new ChoiceBox<>();
         coloringChoiceBox.setValue(this.model.getColorization());
 
         coloringChoiceBox.setOnAction(e -> {
-            Colorable selected = coloringChoiceBox.getValue();
+            Colorization selected = coloringChoiceBox.getValue();
             if (selected != null) {
                 this.model.setColorization(selected);
             }
@@ -473,10 +522,10 @@ public class FractalView implements Builder<Region> {
         TextField sequenceField = new TextField(Lyapunov.indicesToSequence(lyapunov.getSequence()));
 
         sequenceField.setOnAction(event -> {
-                    lyapunov.setSequence(Lyapunov.sequenceToIndices(sequenceField.getText()));
-                    sequenceField.setText(sequenceField.getText());
-                    this.state.updateDisplayChannel();
-                });
+            lyapunov.setSequence(Lyapunov.sequenceToIndices(sequenceField.getText()));
+            sequenceField.setText(sequenceField.getText());
+            this.state.updateDisplayChannel();
+        });
 
         grid.addRow(0, new Label(I18n.getMessage("sequence")), sequenceField);
 

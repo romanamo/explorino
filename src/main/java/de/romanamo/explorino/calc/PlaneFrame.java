@@ -1,25 +1,23 @@
 package de.romanamo.explorino.calc;
 
 import de.romanamo.explorino.eval.Evaluation;
+import de.romanamo.explorino.eval.Evaluator;
+import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Numeric;
 import de.romanamo.explorino.math.Point;
 import de.romanamo.explorino.util.Log;
-import de.romanamo.explorino.eval.Evaluator;
-import de.romanamo.explorino.math.Complex;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 public class PlaneFrame extends Plane {
 
     private Point tileGridSize;
 
-    private boolean useTileOptimize = true;
+    private boolean useTileOptimize = false;
 
     public PlaneFrame(double zoom, Point gridSize, Complex planeSize, Complex planeOffset, Point tileGridSize) {
         super(zoom, gridSize, planeSize, planeOffset);

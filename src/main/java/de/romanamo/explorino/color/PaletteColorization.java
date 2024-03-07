@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 
 import java.util.List;
 
-public class PaletteColorization implements Colorable {
+public class PaletteColorization extends Colorization {
 
     public static final PaletteColorization EXAMPLE = new PaletteColorization(
             List.of(
@@ -26,17 +26,30 @@ public class PaletteColorization implements Colorable {
 
     private final List<Color> palette;
 
+    private boolean interpolated;
+
     public PaletteColorization(List<Color> palette) {
         this.palette = palette;
+        this.interpolated = true;
     }
 
+    private Color retrieve(int i) {
+        return this.palette.get(i % this.palette.size());
+    }
 
     @Override
     public Color colorize(Evaluation evaluation) {
         if (evaluation.getIteration() < evaluation.getMaxIteration()) {
-            int i = evaluation.getIteration() % this.palette.size();
+            int i = evaluation.getIteration();
+            if (interpolated) {
+                double ratio = (double) evaluation.getIteration() / evaluation.getMaxIteration();
+                double x = (Math.cos(ratio * Math.PI + Math.PI) + 1.0) / 2.0;
 
-            return this.palette.get(i);
+                return this.retrieve((int) (x * this.palette.size() * 3));
+            } else {
+                return this.retrieve(i);
+            }
+
         }
         return Color.hsb(0, 0, 0);
     }

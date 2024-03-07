@@ -5,23 +5,35 @@
     <h3 align="center">Explorino</h3>
 </div>
 
-## Installation
+## About
 
-To be added
+Explorino is a tool to explore a variety of Fractals by simple moving or zooming.
+
+Precision goes as far as a 64-bit floating-point number for a zoomed in point allows.
+
+You can save your favorite findings as `.png`-image.
+Resolution and Computation depth can be selected.
+
+Language Support for:
+
+- English
+- French
+- German
+- Spanish
 
 ## Requirements
 
 Java 11 or higher is required.
 
-## About
+## Controls
 
-Explorino is a tool to explore a variety of Fractals by simple moving or zooming.
-Precision goes as far as a 64-bit floating-point number for a zoomed in point allows.
+In Fullscreen mode following keys can be used to navigate around.
 
-You can save your favorite findings as `.png`-image.
-
-Resolution and Computation depth can be selected.
-
+| Key(s) | Action                                     |
+|--------|--------------------------------------------|
+| R      | Reset Offset to Origin (0,0) and Zoom to 1 |
+| WASD   | Up-/Left-/Down-/Right-Movement             |
+| IO     | In-/Out-Zoom                               |
 
 ### Fractals
 
