@@ -11,8 +11,14 @@ import java.util.ResourceBundle;
  */
 public final class I18n {
 
-    private final static String BUNDLE_KEY = "I18n";
+    /**
+     * Key for Internationalization Bundle.
+     */
+    private static final String BUNDLE_KEY = "I18n";
 
+    /**
+     * Resource Bundle.
+     */
     private static ResourceBundle bundle;
 
     private I18n() {

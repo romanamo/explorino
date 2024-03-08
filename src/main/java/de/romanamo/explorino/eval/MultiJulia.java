@@ -4,13 +4,13 @@ import de.romanamo.explorino.math.Complex;
 
 import java.util.function.Function;
 
-public class Polynomial extends Evaluator {
+public class MultiJulia extends Evaluator {
 
-    private final Complex parameter;
-    private final int degree;
+    private Complex parameter;
+    private int degree;
 
-    public Polynomial(int maxIteration, int degree, Complex parameter) {
-        super(maxIteration, c -> c.distance(Complex.ZERO) > 2);
+    public MultiJulia(int maxIteration, int degree, Complex parameter) {
+        super(maxIteration);
         this.degree = degree;
         this.parameter = parameter;
     }
@@ -32,4 +32,13 @@ public class Polynomial extends Evaluator {
     public int getDegree() {
         return degree;
     }
+
+    public void setDegree(int degree) {
+        this.degree = degree;
+    }
+
+    public void setParameter(Complex parameter) {
+        this.parameter = parameter;
+    }
+
 }

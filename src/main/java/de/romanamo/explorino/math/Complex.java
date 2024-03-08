@@ -5,27 +5,52 @@ import java.util.Objects;
 /**
  * Class to represent complex numbers.
  */
-public class Complex {
+public final class Complex {
 
+    /**
+     * Zero.
+     */
     public static final Complex ZERO = new Complex(0, 0);
 
+    /**
+     * One Real unit.
+     */
     public static final Complex REAL = new Complex(1, 0);
 
-    public static final Complex IMAGINARY = new Complex(0, 1);
+    /**
+     * One Imaginary unit.
+     */
+    public static final Complex IMAG = new Complex(0, 1);
 
-    private double real;
+    /**
+     * Internal real part.
+     */
+    private final double real;
 
-    private double imaginary;
+    /**
+     * Internal imaginary .
+     */
+    private final double imag;
 
     /**
      * Constructs a complex number.
      *
-     * @param real      real part
-     * @param imaginary imaginary part
+     * @param real real part
+     * @param imag imaginary part
      */
-    private Complex(double real, double imaginary) {
+    private Complex(double real, double imag) {
         this.real = real;
-        this.imaginary = imaginary;
+        this.imag = imag;
+    }
+
+    /**
+     * Constructs a complex number by copying.
+     *
+     * @param other complex number to copy
+     * @return copied number
+     */
+    public static Complex ofComplex(Complex other) {
+        return new Complex(other.real, other.imag);
     }
 
     /**
@@ -58,7 +83,7 @@ public class Complex {
      * @return a+b
      */
     public Complex add(Complex summand) {
-        return new Complex(this.real + summand.real, this.imaginary + summand.imaginary);
+        return new Complex(this.real + summand.real, this.imag + summand.imag);
     }
 
     /**
@@ -68,7 +93,7 @@ public class Complex {
      * @return subtraction
      */
     public Complex subtract(Complex subtrahend) {
-        return new Complex(this.real - subtrahend.real, this.imaginary - subtrahend.imaginary);
+        return new Complex(this.real - subtrahend.real, this.imag - subtrahend.imag);
     }
 
     /**
@@ -79,8 +104,8 @@ public class Complex {
      */
     public Complex rotate(double angle) {
         //apply rotation matrix for R^2
-        double rotatedReal = this.real * Math.cos(angle) - this.imaginary * Math.sin(angle);
-        double rotatedImaginary = this.real * Math.sin(angle) + this.imaginary * Math.cos(angle);
+        double rotatedReal = this.real * Math.cos(angle) - this.imag * Math.sin(angle);
+        double rotatedImaginary = this.real * Math.sin(angle) + this.imag * Math.cos(angle);
 
         return new Complex(rotatedReal, rotatedImaginary);
     }
@@ -92,7 +117,7 @@ public class Complex {
      * @return s*c
      */
     public Complex multiply(double multiplicand) {
-        return new Complex(this.real * multiplicand, this.imaginary * multiplicand);
+        return new Complex(this.real * multiplicand, this.imag * multiplicand);
     }
 
     /**
@@ -102,8 +127,8 @@ public class Complex {
      * @return c*d
      */
     public Complex multiply(Complex multiplicand) {
-        double multipliedReal = this.real * multiplicand.real - this.imaginary * multiplicand.imaginary;
-        double multipliedImaginary = this.imaginary * multiplicand.real + multiplicand.imaginary * this.real;
+        double multipliedReal = this.real * multiplicand.real - this.imag * multiplicand.imag;
+        double multipliedImaginary = this.imag * multiplicand.real + multiplicand.imag * this.real;
 
         return new Complex(multipliedReal, multipliedImaginary);
     }
@@ -115,7 +140,7 @@ public class Complex {
      * @return c/d
      */
     public Complex divide(double divisor) {
-        return new Complex(this.real / divisor, this.imaginary / divisor);
+        return new Complex(this.real / divisor, this.imag / divisor);
     }
 
     /**
@@ -128,13 +153,12 @@ public class Complex {
         if (divisor.equals(Complex.ZERO)) {
             throw new ArithmeticException(String.format("Can not divide %s by zero", this));
         }
-        double dividedRadius = this.getRadius() / divisor.getRadius();
-        double subtractedAngle = this.getAngle() - divisor.getAngle();
 
-        double dividedReal = dividedRadius * Math.cos(subtractedAngle);
-        double dividedImaginary = dividedRadius * Math.sin(subtractedAngle);
+        double denominator = divisor.real * divisor.real + divisor.imag * divisor.imag;
+        double dividedReal = (this.real * divisor.real + this.imag * divisor.imag) / denominator;
+        double dividedImag = (this.imag * divisor.real - this.real * divisor.imag) / denominator;
 
-        return new Complex(dividedReal, dividedImaginary);
+        return new Complex(dividedReal, dividedImag);
     }
 
     /**
@@ -145,9 +169,22 @@ public class Complex {
      */
     public double distance(Complex other) {
         double realDifference = this.real - other.real;
-        double imaginaryDifference = this.imaginary - other.imaginary;
+        double imaginaryDifference = this.imag - other.imag;
 
         return Math.sqrt(realDifference * realDifference + imaginaryDifference * imaginaryDifference);
+    }
+
+    /**
+     * Calculates the squared Euclidean distance between 2 complex numbers a,b.
+     *
+     * @param other other
+     * @return squared distance between a, b
+     */
+    public double distanceSquared(Complex other) {
+        double realDifference = this.real - other.real;
+        double imaginaryDifference = this.imag - other.imag;
+
+        return realDifference * realDifference + imaginaryDifference * imaginaryDifference;
     }
 
     /**
@@ -175,6 +212,8 @@ public class Complex {
                 return this;
             case 2:
                 return this.multiply(this);
+            case 3:
+                return this.multiply(this).multiply(this);
             default:
                 //do expensive calculation
                 double poweredRadius = Math.pow(this.getRadius(), exponent);
@@ -193,7 +232,7 @@ public class Complex {
      * @return conj(c)
      */
     public Complex conjugate() {
-        return new Complex(this.real, -this.imaginary);
+        return new Complex(this.real, -this.imag);
     }
 
 
@@ -203,7 +242,7 @@ public class Complex {
      * @return arg(c)
      */
     public double argument() {
-        return Math.atan(this.imaginary / this.real);
+        return Math.atan(this.imag / this.real);
     }
 
     /**
@@ -219,9 +258,18 @@ public class Complex {
      */
     public Complex toQuadrant(boolean real, boolean imaginary) {
         double absReal = Math.abs(this.real);
-        double absImag = Math.abs(this.imaginary);
+        double absImag = Math.abs(this.imag);
         //create complex number in quadrant via conditions
         return new Complex(real ? absReal : -absReal, imaginary ? absImag : -absImag);
+    }
+
+    /**
+     * Converts the complex number into an array.
+     *
+     * @return array representation
+     */
+    public double[] toArray() {
+        return new double[]{this.real, this.imag};
     }
 
     /**
@@ -230,7 +278,7 @@ public class Complex {
      * @return angle in radians
      */
     public double getAngle() {
-        return Math.atan2(this.imaginary, this.real);
+        return Math.atan2(this.imag, this.real);
     }
 
     /**
@@ -239,7 +287,7 @@ public class Complex {
      * @return radius
      */
     public double getRadius() {
-        return Math.sqrt(this.real * this.real + this.imaginary * this.imaginary);
+        return Math.sqrt(this.real * this.real + this.imag * this.imag);
     }
 
     /**
@@ -256,69 +304,80 @@ public class Complex {
      *
      * @return imaginary part
      */
-    public double getImaginary() {
-        return imaginary;
+    public double getImag() {
+        return imag;
     }
 
 
     /**
-     * Sets the angle of the complex number. As specified in polar form.
+     * Changes the angle of the complex number. As specified in polar form.
      *
      * @param angle angle in radians
+     * @return number with changed angle
      */
-    public void setAngle(double angle) {
+    public Complex changeAngle(double angle) {
         double oldRadius = this.getRadius();
 
-        this.real = oldRadius * Math.cos(angle);
-        this.imaginary = oldRadius * Math.sin(angle);
+        return new Complex(
+                oldRadius * Math.cos(angle),
+                oldRadius * Math.sin(angle));
     }
 
     /**
-     * Sets the radius of the complex number. As specified in polar form.
+     * Changes the radius of the complex number. As specified in polar form.
      *
      * @param radius positive radius
+     * @return number with changed radius
      */
-    public void setRadius(double radius) {
+    public Complex changeRadius(double radius) {
         double oldAngle = this.getAngle();
         double absRadius = Math.abs(radius);
 
-        this.real = absRadius * Math.cos(oldAngle);
-        this.imaginary = absRadius * Math.sin(oldAngle);
+        return new Complex(
+                absRadius * Math.cos(oldAngle),
+                absRadius * Math.sin(oldAngle));
     }
 
     /**
-     * Sets the real part of a complex number. As specified in cartesian form.
+     * Changes the real part of a complex number. As specified in cartesian form.
      *
      * @param real real part
+     * @return number with changed real part
      */
-    public void setReal(double real) {
-        this.real = real;
+    public Complex changeReal(double real) {
+        return new Complex(real, this.imag);
     }
 
     /**
-     * Sets the imaginary part of a complex number. As specified in cartesian form.
+     * Changes the imaginary part of a complex number.
+     * As specified in cartesian form.
      *
-     * @param imaginary imaginary part
+     * @param imag imaginary part
+     * @return number with changed imaginary part
      */
-    public void setImaginary(double imaginary) {
-        this.imaginary = imaginary;
+    public Complex changeImag(double imag) {
+        return new Complex(this.real, imag);
     }
 
     @Override
     public String toString() {
-        return String.format("%s + %si", this.real, this.imaginary);
+        return String.format("%s + %si", this.real, this.imag);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Complex complex = (Complex) o;
-        return Double.compare(real, complex.real) == 0 && Double.compare(imaginary, complex.imaginary) == 0;
+        return Double.compare(real, complex.real) == 0 && Double.compare(imag, complex.imag) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(real, imaginary);
+        return Objects.hash(real, imag);
     }
 }

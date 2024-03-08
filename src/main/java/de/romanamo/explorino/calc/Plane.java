@@ -31,10 +31,10 @@ public abstract class Plane implements Computable, Transformable {
         Complex planeOrigin = scaledPlaneSize.divide(2.0);
 
         //start at left side and add increment for each x
-        double transformedX = -planeOrigin.getReal() + coords.x * scaledTileSize.getReal();
+        double transformedX = -planeOrigin.getReal() + coords.getX() * scaledTileSize.getReal();
 
         //start at top side and add decrement for each x
-        double transformedY = planeOrigin.getImaginary() - coords.y * scaledTileSize.getImaginary();
+        double transformedY = planeOrigin.getImag() - coords.getY() * scaledTileSize.getImag();
 
         return Complex.ofCartesian(transformedX, transformedY).add(this.planeOffset);
     }
@@ -46,8 +46,8 @@ public abstract class Plane implements Computable, Transformable {
 
     public Complex getTileSize() {
         return Complex.ofCartesian(
-                Math.abs(this.planeSize.getReal()) / (double) this.gridSize.x,
-                Math.abs(this.planeSize.getImaginary()) / (double) this.gridSize.y);
+                Math.abs(this.planeSize.getReal()) / (double) this.gridSize.getX(),
+                Math.abs(this.planeSize.getImag()) / (double) this.gridSize.getY());
     }
 
     public double getZoom() {
@@ -55,7 +55,7 @@ public abstract class Plane implements Computable, Transformable {
     }
 
     public void setZoom(double zoom) {
-        this.zoom = zoom;
+        this.zoom = Math.abs(zoom);
     }
 
     public Complex getPlaneOffset() {
@@ -64,6 +64,10 @@ public abstract class Plane implements Computable, Transformable {
 
     public Point getGridSize() {
         return gridSize;
+    }
+
+    public void setGridSize(Point gridSize) {
+        this.gridSize = gridSize;
     }
 
     public void setPlaneOffset(Complex planeOffset) {

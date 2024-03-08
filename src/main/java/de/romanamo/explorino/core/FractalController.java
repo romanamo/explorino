@@ -1,7 +1,7 @@
 package de.romanamo.explorino.core;
 
-import de.romanamo.explorino.core.model.AppModel;
-import de.romanamo.explorino.core.model.FractalModel;
+import de.romanamo.explorino.core.model.State;
+import de.romanamo.explorino.core.model.Model;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Builder;
@@ -11,10 +11,12 @@ public class FractalController {
     private final Builder<Region> viewBuilder;
 
     public FractalController(Stage stage){
-        FractalModel model = new FractalModel();
-        AppModel appModel = new AppModel();
+        Model model = new Model();
+        State state = new State();
 
-        this.viewBuilder = new FractalView(model, appModel, stage);
+        FractalDisplay fractalDisplay = new FractalDisplay(model, state);
+
+        this.viewBuilder = new FractalView(model, state, stage, fractalDisplay);
     }
 
     public Region getView() {

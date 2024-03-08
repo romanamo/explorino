@@ -1,9 +1,9 @@
-package de.romanamo.explorino.io.colorize;
+package de.romanamo.explorino.color;
 
 import de.romanamo.explorino.eval.Evaluation;
 import javafx.scene.paint.Color;
 
-public class BasicColorization implements Colorable {
+public class BasicColorization extends Colorization {
 
     @Override
     public Color colorize(Evaluation evaluation) {
