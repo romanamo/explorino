@@ -1,11 +1,11 @@
 package de.romanamo.explorino.core;
 
+import de.romanamo.explorino.Launcher;
 import de.romanamo.explorino.calc.Grid;
 import de.romanamo.explorino.core.model.State;
 import de.romanamo.explorino.core.model.Model;
 import de.romanamo.explorino.color.Colorization;
 import de.romanamo.explorino.math.Complex;
-import de.romanamo.explorino.util.Log;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -99,7 +99,7 @@ public class FractalDisplay extends ImageView {
         long now = System.currentTimeMillis();
 
         if (now - this.lastDraw.get() <= 50) {
-            Log.LOGGER.fine("Skipped Draw");
+            Launcher.getLogger().fine("Skipped Draw");
             return;
         }
         this.state.updateInfoChannel();

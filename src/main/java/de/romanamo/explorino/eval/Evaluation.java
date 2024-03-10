@@ -7,12 +7,24 @@ import de.romanamo.explorino.math.Complex;
  */
 public class Evaluation {
 
+    /**
+     * Input of the evaluation.
+     */
     private final Complex start;
 
+    /**
+     * Output of the evaluation.
+     */
     private final Complex end;
 
+    /**
+     * Reached Iteration.
+     */
     private final int iteration;
 
+    /**
+     * Maximum Iteration.
+     */
     private final int maxIteration;
 
     /**

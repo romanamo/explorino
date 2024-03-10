@@ -6,15 +6,23 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Lyapunov extends Evaluator {
+public final class Lyapunov extends Evaluator {
 
+    /**
+     * Uppercase start index.
+     */
+    private static final int UPPERCASE_INDEX = 65;
+
+    /**
+     * Alphabetic sequence.
+     */
     private int[] sequence;
 
     /**
      * Constructs the Lyapunov fractal.
      *
      * @param maxIteration maximum iteration of the evaluating process
-     * @param sequence alphabetic sequence
+     * @param sequence     alphabetic sequence
      */
     public Lyapunov(int maxIteration, int[] sequence) {
         super(maxIteration);
@@ -33,7 +41,7 @@ public class Lyapunov extends Evaluator {
         String preprocessed = sequence.replaceAll("[^a-zA-Z]", "").toUpperCase();
 
         //map to corresponding indices
-        return preprocessed.chars().map(c -> c - 65).toArray();
+        return preprocessed.chars().map(c -> c - UPPERCASE_INDEX).toArray();
     }
 
     /**
@@ -44,7 +52,7 @@ public class Lyapunov extends Evaluator {
      */
     public static String indicesToSequence(int[] indices) {
         return Arrays.stream(indices)
-                .mapToObj(c -> String.valueOf((char) (c + 65)))
+                .mapToObj(c -> String.valueOf((char) (c + UPPERCASE_INDEX)))
                 .collect(Collectors.joining());
     }
 
@@ -68,7 +76,7 @@ public class Lyapunov extends Evaluator {
             double r = resolve(i, point);
 
             x = logistic(x, r);
-            
+
             lambda *= Math.abs(r * (1 - 2 * x));
         }
         lambda = Math.log(lambda) / this.getMaxIteration();
@@ -80,14 +88,6 @@ public class Lyapunov extends Evaluator {
                 this.getMaxIteration());
     }
 
-    public int[] getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(int[] sequence) {
-        this.sequence = sequence;
-    }
-
     @Override
     public Function<Complex, Complex> function(Complex element) {
         throw new UnsupportedOperationException("Unused function");
@@ -96,5 +96,23 @@ public class Lyapunov extends Evaluator {
     @Override
     public Complex initial(Complex element) {
         throw new UnsupportedOperationException("Unused function");
+    }
+
+    /**
+     * Gets the sequence.
+     *
+     * @return sequence.
+     */
+    public int[] getSequence() {
+        return sequence;
+    }
+
+    /**
+     * Sets the sequence.
+     *
+     * @param sequence sequence
+     */
+    public void setSequence(int[] sequence) {
+        this.sequence = sequence;
     }
 }

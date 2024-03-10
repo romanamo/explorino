@@ -1,11 +1,11 @@
 package de.romanamo.explorino.calc;
 
+import de.romanamo.explorino.Launcher;
 import de.romanamo.explorino.eval.Evaluation;
 import de.romanamo.explorino.eval.Evaluator;
 import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Numeric;
 import de.romanamo.explorino.math.Point;
-import de.romanamo.explorino.util.Log;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -81,7 +81,7 @@ public class PlaneFrame extends Plane {
         try {
             boolean state = executor.awaitTermination(64, TimeUnit.SECONDS);
             if (!state) {
-                Log.LOGGER.warning("Failed Termination");
+                Launcher.getLogger().warning("Failed Termination");
             }
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted");
@@ -89,7 +89,7 @@ public class PlaneFrame extends Plane {
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
 
-        Log.LOGGER.fine(String.format("Calculated Frame for %d ms", timeElapsed));
+        Launcher.getLogger().fine(String.format("Calculated Frame for %d ms", timeElapsed));
         return grid;
     }
 
@@ -175,7 +175,6 @@ public class PlaneFrame extends Plane {
                                 initialEvaluation.getMaxIteration());
 
                         grid.setField(x, y, actual);
-                        //TODO for now incorrect getEnd maybe interpolate between points
                     } else {
                         //Else do calculations one by one
                         grid.setField(x, y, evaluator.evaluate(this.transformToPlane(new Point(x, y))));

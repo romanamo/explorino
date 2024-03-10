@@ -18,7 +18,7 @@ public final class Numeric {
      * @param function function
      * @param x        argument
      * @param h        delta
-     * @return approximated difference qoutient
+     * @return approximated difference quotient
      */
     public static Complex differentiate(Function<Complex, Complex> function, Complex x, Complex h) {
         Complex addedH = function.apply(x.add(h));

@@ -10,8 +10,19 @@ import java.util.function.Predicate;
  */
 public abstract class Evaluator {
 
+    /**
+     * Default escape distance squared.
+     */
+    private static final int DEFAULT_ESCAPE_DISTANCE_SQUARED = 4;
+
+    /**
+     * Maximum iteration of the evaluating process.
+     */
     private int maxIteration;
 
+    /**
+     * Determines if a point escaped.
+     */
     private Predicate<Complex> escapeCondition;
 
     /**
@@ -32,8 +43,7 @@ public abstract class Evaluator {
      */
     public Evaluator(int maxIteration) {
         this.setMaxIteration(maxIteration);
-        this.setEscapeCondition(c -> c.distanceSquared(Complex.ZERO) > 4);
-
+        this.setEscapeCondition(c -> c.distanceSquared(Complex.ZERO) > DEFAULT_ESCAPE_DISTANCE_SQUARED);
     }
 
     /**
@@ -88,11 +98,20 @@ public abstract class Evaluator {
         return this.getMaxIteration() == this.evaluate(element).getIteration();
     }
 
-
+    /**
+     * Gets the maximum iteration.
+     *
+     * @return maximum iteration
+     */
     public int getMaxIteration() {
         return this.maxIteration;
     }
 
+    /**
+     * Sets the maximum iteration.
+     *
+     * @param maxIteration maximum iteration
+     */
     public void setMaxIteration(int maxIteration) {
         if (maxIteration < 0) {
             throw new IllegalArgumentException(
@@ -101,14 +120,29 @@ public abstract class Evaluator {
         this.maxIteration = maxIteration;
     }
 
+    /**
+     * Gets the escape condition.
+     *
+     * @return escape condition
+     */
     public Predicate<Complex> getEscapeCondition() {
         return this.escapeCondition;
     }
 
+    /**
+     * Sets the escape condition.
+     *
+     * @param escapeCondition escape condition
+     */
     public void setEscapeCondition(Predicate<Complex> escapeCondition) {
         this.escapeCondition = escapeCondition;
     }
 
+    /**
+     * To display name.
+     *
+     * @return display name
+     */
     @Override
     public String toString() {
         return this.getClass().getSimpleName();

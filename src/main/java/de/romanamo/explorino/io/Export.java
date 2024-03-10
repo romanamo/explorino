@@ -1,9 +1,9 @@
 package de.romanamo.explorino.io;
 
+import de.romanamo.explorino.Launcher;
 import de.romanamo.explorino.calc.Grid;
 import de.romanamo.explorino.color.Colorization;
 import de.romanamo.explorino.eval.Evaluation;
-import de.romanamo.explorino.util.Log;
 import javafx.scene.paint.Color;
 
 import javax.imageio.ImageIO;
@@ -12,6 +12,17 @@ import java.io.File;
 import java.io.IOException;
 
 public final class Export {
+
+    private static final double RGB_SCALE = 255.0;
+
+    private static final int MASK = 0xFF;
+
+    private static final int BIT1 = 24;
+
+    private static final int BIT2 = 16;
+
+    private static final int BIT3 = 8;
+
 
     private Export() {
 
@@ -33,19 +44,19 @@ public final class Export {
             boolean successful = ImageIO.write(image, fileExtension, file);
 
             if (successful) {
-                Log.LOGGER.info(String.format(
+                Launcher.getLogger().info(String.format(
                         "Saved %s successfully to %s",
                         file.getName(),
                         file.getAbsolutePath()));
             } else {
-                Log.LOGGER.warning(String.format(
+                Launcher.getLogger().warning(String.format(
                         "Unsupported file format: %s detected, unable to save %s to %s",
                         fileExtension,
                         file.getName(),
                         file.getAbsolutePath()));
             }
         } catch (IOException e) {
-            Log.LOGGER.severe("Unable to create ImageOutputStream");
+            Launcher.getLogger().severe("Unable to create ImageOutputStream");
             throw new RuntimeException(e);
         }
     }
@@ -59,12 +70,11 @@ public final class Export {
 
                 Color pixel = coloring.colorize(result);
 
-                int red = (int) (pixel.getRed() * 255.0) & 0xFF;
-                int green = (int) (pixel.getGreen() * 255.0) & 0xFF;
-                int blue = (int) (pixel.getBlue() * 255.0) & 0xFF;
-                int a = 0xFF;
+                int red = (int) (pixel.getRed() * RGB_SCALE) & MASK;
+                int green = (int) (pixel.getGreen() * RGB_SCALE) & MASK;
+                int blue = (int) (pixel.getBlue() * RGB_SCALE) & MASK;
 
-                int color = a << 24 | red << 16 | green << 8 | blue;
+                int color = MASK << BIT1 | red << BIT2 | green << BIT3 | blue;
                 image.setRGB(i, j, color);
             }
         }

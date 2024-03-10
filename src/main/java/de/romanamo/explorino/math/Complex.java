@@ -44,16 +44,6 @@ public final class Complex {
     }
 
     /**
-     * Constructs a complex number by copying.
-     *
-     * @param other complex number to copy
-     * @return copied number
-     */
-    public static Complex ofComplex(Complex other) {
-        return new Complex(other.real, other.imag);
-    }
-
-    /**
      * Constructs a complex number using its cartesian form.
      *
      * @param real      real part
@@ -212,8 +202,6 @@ public final class Complex {
                 return this;
             case 2:
                 return this.multiply(this);
-            case 3:
-                return this.multiply(this).multiply(this);
             default:
                 //do expensive calculation
                 double poweredRadius = Math.pow(this.getRadius(), exponent);

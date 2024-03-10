@@ -5,7 +5,7 @@ import de.romanamo.explorino.math.Complex;
 import java.util.function.Function;
 
 /**
- * Class to represent the Mandelbrot Fractal
+ * Class to represent the Mandelbrot Fractal.
  */
 public class Mandelbrot extends Evaluator {
 
@@ -18,11 +18,17 @@ public class Mandelbrot extends Evaluator {
         super(maxIteration);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Function<Complex, Complex> function(Complex element) {
         return c -> c.multiply(c).add(element);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Complex initial(Complex element) {
         return Complex.ZERO;

@@ -2,7 +2,6 @@ package de.romanamo.explorino;
 
 import de.romanamo.explorino.core.FractalController;
 import de.romanamo.explorino.util.I18n;
-import de.romanamo.explorino.util.Log;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -11,14 +10,14 @@ import javafx.stage.Stage;
 import java.util.Locale;
 import java.util.logging.Level;
 
-public class Main extends Application {
+public final class Main extends Application {
 
 
     @Override
     public void start(Stage stage) {
         //configure logging
-        Log.LOGGER.setLevel(Level.ALL);
-        Log.LOGGER.info(String.format("Set Language to %s", Locale.getDefault().getDisplayLanguage()));
+        Launcher.getLogger().setLevel(Level.ALL);
+        Launcher.getLogger().info(String.format("Set Language to %s", Locale.getDefault().getDisplayLanguage()));
 
         FractalController controller = new FractalController(stage);
         Scene scene = new Scene(controller.getView());
@@ -32,6 +31,11 @@ public class Main extends Application {
         stage.show();
     }
 
+    /**
+     * Main method.
+     *
+     * @param args arguments.
+     */
     public static void main(String[] args) {
         launch();
     }

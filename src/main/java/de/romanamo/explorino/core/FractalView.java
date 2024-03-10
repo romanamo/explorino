@@ -3,19 +3,44 @@ package de.romanamo.explorino.core;
 import de.romanamo.explorino.calc.Grid;
 import de.romanamo.explorino.calc.Plane;
 import de.romanamo.explorino.calc.PlaneFrame;
-import de.romanamo.explorino.color.*;
+import de.romanamo.explorino.color.AbsColorization;
+import de.romanamo.explorino.color.ArgColorization;
+import de.romanamo.explorino.color.BasicColorization;
+import de.romanamo.explorino.color.Colorization;
+import de.romanamo.explorino.color.InvertibleColorization;
+import de.romanamo.explorino.color.PaletteColorization;
 import de.romanamo.explorino.core.model.Model;
 import de.romanamo.explorino.core.model.State;
-import de.romanamo.explorino.eval.*;
+import de.romanamo.explorino.eval.Evaluator;
+import de.romanamo.explorino.eval.Lyapunov;
+import de.romanamo.explorino.eval.Mandelbrot;
+import de.romanamo.explorino.eval.MultiBrot;
+import de.romanamo.explorino.eval.MultiJulia;
+import de.romanamo.explorino.eval.Newton;
 import de.romanamo.explorino.io.Export;
 import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Point;
 import de.romanamo.explorino.math.Polynomial;
 import de.romanamo.explorino.util.I18n;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Builder;
@@ -540,7 +565,7 @@ public class FractalView implements Builder<Region> {
      */
     public Region createNewtonModifier(Newton newton) {
 
-        Polynomial polynomial = newton.getPolynom();
+        Polynomial polynomial = newton.getPolynomial();
         GridPane grid = new GridPane();
 
         grid.setHgap(8);
@@ -564,16 +589,16 @@ public class FractalView implements Builder<Region> {
      * @return modifier
      */
     private Spinner<Double> createCoefficientModifier(int i, Newton newton) {
-        Polynomial polynomial = newton.getPolynom();
+        Polynomial polynomial = newton.getPolynomial();
 
         Spinner<Double> coefficientSpinner = new Spinner<>(-100.0, 100.0, polynomial.getCoefficients()[i], 1.0);
         coefficientSpinner.setEditable(true);
 
         coefficientSpinner.valueProperty().addListener((o, s1, s2) -> {
-            Polynomial pol = newton.getPolynom();
+            Polynomial pol = newton.getPolynomial();
 
             pol.getCoefficients()[i] = s2;
-            newton.setDerivative(newton.getPolynom().derivate());
+            newton.setDerivative(newton.getPolynomial().derivate());
 
             this.state.updateDisplayChannel();
         });

@@ -2,8 +2,6 @@ package de.romanamo.explorino.calc;
 
 import de.romanamo.explorino.eval.Evaluation;
 
-import java.util.Arrays;
-
 /**
  * Class to represent a bundled collection of evaluations
  * in accessible grid form.
