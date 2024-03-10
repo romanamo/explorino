@@ -5,6 +5,9 @@ import javafx.scene.paint.Color;
 
 public class BasicColorization extends Colorization {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Color colorize(Evaluation evaluation) {
         double ratio = (double) evaluation.getIteration() / evaluation.getMaxIteration();

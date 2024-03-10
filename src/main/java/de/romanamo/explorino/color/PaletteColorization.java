@@ -7,6 +7,9 @@ import java.util.List;
 
 public class PaletteColorization extends Colorization {
 
+    /**
+     * Example Colorization.
+     */
     public static final PaletteColorization EXAMPLE = new PaletteColorization(
             List.of(
                     Color.rgb(9, 1, 47),
@@ -24,30 +27,35 @@ public class PaletteColorization extends Colorization {
                     Color.rgb(153, 87, 0),
                     Color.rgb(106, 52, 3)));
 
+    /**
+     * Color Palette.
+     */
     private final List<Color> palette;
 
-    private boolean interpolated;
-
+    /**
+     * Constructs a {@link PaletteColorization}.
+     *
+     * @param palette palette
+     */
     public PaletteColorization(List<Color> palette) {
         this.palette = palette;
-        this.interpolated = true;
     }
 
     private Color retrieve(int i) {
         return this.palette.get(i % this.palette.size());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Color colorize(Evaluation evaluation) {
         if (evaluation.getIteration() < evaluation.getMaxIteration()) {
-            int i = evaluation.getIteration();
-            if (interpolated) {
-                double ratio = (double) evaluation.getIteration() / evaluation.getMaxIteration();
-                double x = (Math.cos(ratio * Math.PI + Math.PI) + 1.0) / 2.0;
+            double ratio = (double) evaluation.getIteration() / evaluation.getMaxIteration();
+            double x = (Math.cos(ratio * Math.PI + Math.PI) + 1.0) / 2.0;
 
-                return this.retrieve((int) (x * this.palette.size() * 3));
-            }
-            return this.retrieve(i);
+            return this.retrieve((int) (x * this.palette.size() * 3));
+
 
         }
         return Color.hsb(0, 0, 0);

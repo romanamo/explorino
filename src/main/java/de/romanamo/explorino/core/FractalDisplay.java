@@ -14,7 +14,6 @@ import javafx.scene.input.KeyEvent;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FractalDisplay extends ImageView {
-
     private final AtomicLong lastDraw = new AtomicLong(0);
 
     private Complex lastDrag = Complex.ZERO;
@@ -23,10 +22,10 @@ public class FractalDisplay extends ImageView {
 
     private final State state;
 
-    public FractalDisplay(Model model, State appmodel) {
+    public FractalDisplay(Model model, State state) {
         super();
         this.model = model;
-        this.state = appmodel;
+        this.state = state;
 
         this.setImage(new WritableImage(450, 450));
         this.setSmooth(false);
@@ -71,12 +70,13 @@ public class FractalDisplay extends ImageView {
                 case O:
                     this.model.getPlane().setZoom(this.model.getPlane().getZoom() - 0.1 * this.model.getPlane().getZoom());
                     break;
-                case R: {
+                case R:
                     this.model.getPlane().setZoom(1.0);
                     this.model.getPlane().setPlaneOffset(Complex.ZERO);
                     this.draw();
-                    return;
-                }
+                    break;
+                default:
+                    break;
             }
             this.model.getPlane().setPlaneOffset(Complex.ofCartesian(x, y));
             this.draw();

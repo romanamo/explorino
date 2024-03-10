@@ -8,9 +8,17 @@ import javafx.util.Builder;
 
 public class FractalController {
 
+    /**
+     * View builder.
+     */
     private final Builder<Region> viewBuilder;
 
-    public FractalController(Stage stage){
+    /**
+     * Constructs a {@link FractalController}.
+     *
+     * @param stage stage
+     */
+    public FractalController(Stage stage) {
         Model model = new Model();
         State state = new State();
 
@@ -19,6 +27,11 @@ public class FractalController {
         this.viewBuilder = new FractalView(model, state, stage, fractalDisplay);
     }
 
+    /**
+     * Gets the view.
+     *
+     * @return view.
+     */
     public Region getView() {
         return this.viewBuilder.build();
     }

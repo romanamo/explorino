@@ -12,10 +12,15 @@ import de.romanamo.explorino.math.Point;
 
 public class Model {
 
-
+    /**
+     * Evaluator.
+     */
     private Evaluator evaluator =
             new Mandelbrot(10);
 
+    /**
+     * Plane.
+     */
     private Plane plane =
             new PlaneFrame(
                     1.0,
@@ -24,30 +29,62 @@ public class Model {
                     Complex.ZERO,
                     new Point(16, 16));
 
+    /**
+     * Colorization.
+     */
     private Colorization colorization = PaletteColorization.EXAMPLE;
 
-
+    /**
+     * Gets the plane.
+     *
+     * @return plane
+     */
     public Plane getPlane() {
         return plane;
     }
 
+    /**
+     * Sets the plane.
+     *
+     * @param plane plane
+     */
+    public void setPlane(Plane plane) {
+        this.plane = plane;
+    }
+
+    /**
+     * Gets the evaluator.
+     *
+     * @return evaluator
+     */
     public Evaluator getEvaluator() {
         return evaluator;
     }
 
-    public Colorization getColorization() {
-        return colorization;
-    }
-
+    /**
+     * Sets the evaluator.
+     *
+     * @param evaluator evaluator
+     */
     public void setEvaluator(Evaluator evaluator) {
         this.evaluator = evaluator;
     }
 
-    public void setColorization(Colorization colorization) {
-        this.colorization = colorization;
+    /**
+     * Gets the colorization.
+     *
+     * @return colorization
+     */
+    public Colorization getColorization() {
+        return colorization;
     }
 
-    public void setPlane(Plane plane) {
-        this.plane = plane;
+    /**
+     * Sets the colorization.
+     *
+     * @param colorization colorization
+     */
+    public void setColorization(Colorization colorization) {
+        this.colorization = colorization;
     }
 }

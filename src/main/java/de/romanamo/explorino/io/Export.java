@@ -13,21 +13,26 @@ import java.io.IOException;
 
 public final class Export {
 
+    /**
+     * RGB Scale.
+     */
     private static final double RGB_SCALE = 255.0;
 
+    /**
+     * Last Bit Mask.
+     */
     private static final int MASK = 0xFF;
-
-    private static final int BIT1 = 24;
-
-    private static final int BIT2 = 16;
-
-    private static final int BIT3 = 8;
-
 
     private Export() {
 
     }
 
+    /**
+     * Gets the file extension.
+     *
+     * @param file file
+     * @return file extension
+     */
     public static String getFileExtension(File file) {
         String name = file.getName();
         int lastIndexOf = name.lastIndexOf(".");
@@ -37,6 +42,12 @@ public final class Export {
         return name.substring(lastIndexOf + 1);
     }
 
+    /**
+     * Saves a {@link BufferedImage} to a {@link File}.
+     *
+     * @param image buffered image
+     * @param file  file
+     */
     public static void saveImageToFile(BufferedImage image, File file) {
         String fileExtension = getFileExtension(file);
 
@@ -61,6 +72,13 @@ public final class Export {
         }
     }
 
+    /**
+     * Write a {@link Grid} to a {@link BufferedImage} using a {@link Colorization}.
+     *
+     * @param grid     grid
+     * @param coloring colorization
+     * @return buffered image
+     */
     public static BufferedImage writeGridToImage(Grid grid, Colorization coloring) {
         BufferedImage image = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
@@ -74,7 +92,7 @@ public final class Export {
                 int green = (int) (pixel.getGreen() * RGB_SCALE) & MASK;
                 int blue = (int) (pixel.getBlue() * RGB_SCALE) & MASK;
 
-                int color = MASK << BIT1 | red << BIT2 | green << BIT3 | blue;
+                int color = MASK << 24 | red << 16 | green << 8 | blue;
                 image.setRGB(i, j, color);
             }
         }
