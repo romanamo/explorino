@@ -1,4 +1,4 @@
-package de.romanamo.explorino.core.model;
+package de.romanamo.explorino.core;
 
 import de.romanamo.explorino.calc.Plane;
 import de.romanamo.explorino.calc.PlaneFrame;
@@ -10,7 +10,7 @@ import de.romanamo.explorino.math.Complex;
 import de.romanamo.explorino.math.Point;
 
 
-public class Model {
+public class FractalModel {
 
     /**
      * Evaluator.

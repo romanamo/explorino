@@ -1,7 +1,5 @@
 package de.romanamo.explorino.core;
 
-import de.romanamo.explorino.core.model.State;
-import de.romanamo.explorino.core.model.Model;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Builder;
@@ -19,12 +17,12 @@ public class FractalController {
      * @param stage stage
      */
     public FractalController(Stage stage) {
-        Model model = new Model();
-        State state = new State();
+        FractalModel fractalModel = new FractalModel();
+        FractalState fractalState = new FractalState();
 
-        FractalDisplay fractalDisplay = new FractalDisplay(model, state);
+        FractalDisplay fractalDisplay = new FractalDisplay(fractalModel, fractalState);
 
-        this.viewBuilder = new FractalView(model, state, stage, fractalDisplay);
+        this.viewBuilder = new FractalView(fractalModel, fractalState, stage, fractalDisplay);
     }
 
     /**
@@ -35,6 +33,4 @@ public class FractalController {
     public Region getView() {
         return this.viewBuilder.build();
     }
-
-    //TODO put logic in controller
 }

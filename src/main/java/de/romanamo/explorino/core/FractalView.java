@@ -9,8 +9,6 @@ import de.romanamo.explorino.color.BasicColorization;
 import de.romanamo.explorino.color.Colorization;
 import de.romanamo.explorino.color.InvertibleColorization;
 import de.romanamo.explorino.color.PaletteColorization;
-import de.romanamo.explorino.core.model.Model;
-import de.romanamo.explorino.core.model.State;
 import de.romanamo.explorino.eval.Evaluator;
 import de.romanamo.explorino.eval.Lyapunov;
 import de.romanamo.explorino.eval.Mandelbrot;
@@ -50,21 +48,45 @@ import java.io.File;
 
 public class FractalView implements Builder<Region> {
 
-    private final Model model;
+    /**
+     * Fractal model.
+     */
+    private final FractalModel fractalModel;
 
+    /**
+     * Stage.
+     */
     private final Stage stage;
 
-    private final State state;
+    /**
+     * State.
+     */
+    private final FractalState state;
 
-    private final FractalDisplay display;
+    /**
+     * Fractal display.
+     */
+    private final FractalDisplay fractalDisplay;
 
-    public FractalView(Model model, State state, Stage stage, FractalDisplay display) {
-        this.model = model;
+    /**
+     * Constructs a {@link FractalModel}.
+     *
+     * @param fractalModel   fractalModel
+     * @param state          state
+     * @param stage          stage
+     * @param fractalDisplay fractalDisplay
+     */
+    public FractalView(FractalModel fractalModel, FractalState state, Stage stage, FractalDisplay fractalDisplay) {
+        this.fractalModel = fractalModel;
         this.state = state;
         this.stage = stage;
-        this.display = display;
+        this.fractalDisplay = fractalDisplay;
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     */
     @Override
     public Region build() {
         BorderPane root = new BorderPane();
@@ -85,10 +107,10 @@ public class FractalView implements Builder<Region> {
             }
         });
 
-        canvasPane.getChildren().addAll(this.display);
+        canvasPane.getChildren().addAll(this.fractalDisplay);
 
-        this.display.fitWidthProperty().bind(canvasPane.widthProperty());
-        this.display.fitHeightProperty().bind(canvasPane.heightProperty());
+        this.fractalDisplay.fitWidthProperty().bind(canvasPane.widthProperty());
+        this.fractalDisplay.fitHeightProperty().bind(canvasPane.heightProperty());
 
         canvasPane.maxWidthProperty().bind(stage.widthProperty());
 
@@ -153,9 +175,9 @@ public class FractalView implements Builder<Region> {
         menuFileExport.setOnAction(e -> {
             FileChooser fileChooser = createExportFileChooser();
 
-            Evaluator evaluator = this.model.getEvaluator();
-            Grid grid = this.model.getPlane().compute(evaluator);
-            Colorization coloring = this.model.getColorization();
+            Evaluator evaluator = this.fractalModel.getEvaluator();
+            Grid grid = this.fractalModel.getPlane().compute(evaluator);
+            Colorization coloring = this.fractalModel.getColorization();
 
             File file = fileChooser.showSaveDialog(this.stage);
 
@@ -240,9 +262,9 @@ public class FractalView implements Builder<Region> {
         grid.getColumnConstraints().addAll(new ColumnConstraints(64));
         grid.setPadding(new Insets(8));
 
-        double zoom = this.model.getPlane().getZoom();
-        Complex offset = this.model.getPlane().getPlaneOffset();
-        Point resolution = this.model.getPlane().getGridSize();
+        double zoom = this.fractalModel.getPlane().getZoom();
+        Complex offset = this.fractalModel.getPlane().getPlaneOffset();
+        Point resolution = this.fractalModel.getPlane().getGridSize();
 
         Spinner<Double> zoomSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, zoom);
         Spinner<Double> realSpinner = new Spinner<>(-Double.MAX_VALUE, Double.MAX_VALUE, offset.getReal());
@@ -255,7 +277,7 @@ public class FractalView implements Builder<Region> {
         resHeightSpinner.setEditable(true);
 
         this.state.infoChannelProperty().addListener((o, s1, s2) -> {
-            Plane plane = this.model.getPlane();
+            Plane plane = this.fractalModel.getPlane();
             Complex offsets = plane.getPlaneOffset();
 
             zoomSpinner.getValueFactory().setValue(plane.getZoom());
@@ -264,18 +286,18 @@ public class FractalView implements Builder<Region> {
         });
 
         resHeightSpinner.valueProperty().addListener((o, s1, s2) -> {
-            Plane plane = this.model.getPlane();
+            Plane plane = this.fractalModel.getPlane();
             Point updated = new Point(plane.getGridSize().getX(), s2);
             plane.setGridSize(updated);
-            this.display.setImage(new WritableImage(updated.getX(), updated.getY()));
+            this.fractalDisplay.setImage(new WritableImage(updated.getX(), updated.getY()));
             this.state.updateDisplayChannel();
         });
 
         resWidthSpinner.valueProperty().addListener((o, s1, s2) -> {
-            Plane plane = this.model.getPlane();
+            Plane plane = this.fractalModel.getPlane();
             Point updated = new Point(s2, plane.getGridSize().getY());
             plane.setGridSize(updated);
-            this.display.setImage(new WritableImage(updated.getX(), updated.getY()));
+            this.fractalDisplay.setImage(new WritableImage(updated.getX(), updated.getY()));
             this.state.updateDisplayChannel();
         });
 
@@ -299,22 +321,22 @@ public class FractalView implements Builder<Region> {
         grid.setVgap(8);
         grid.setPadding(new Insets(8));
 
-        Slider iterationSlider = new Slider(0, 200, this.model.getEvaluator().getMaxIteration());
+        Slider iterationSlider = new Slider(0, 200, this.fractalModel.getEvaluator().getMaxIteration());
         CheckBox optimizationCheckBox = new CheckBox();
 
         optimizationCheckBox.setSelected(false);
         iterationSlider.setShowTickLabels(true);
         iterationSlider.setMaxWidth(Double.MAX_VALUE);
-        iterationSlider.setValue(this.model.getEvaluator().getMaxIteration());
+        iterationSlider.setValue(this.fractalModel.getEvaluator().getMaxIteration());
 
         iterationSlider.valueProperty().addListener((o, s1, s2) -> {
-            this.model.getEvaluator().setMaxIteration(s2.intValue());
+            this.fractalModel.getEvaluator().setMaxIteration(s2.intValue());
             state.updateDisplayChannel();
         });
 
         optimizationCheckBox.selectedProperty().addListener((o, s1, s2) -> {
-            if (this.model.getPlane() instanceof PlaneFrame) {
-                PlaneFrame planeFrame = (PlaneFrame) this.model.getPlane();
+            if (this.fractalModel.getPlane() instanceof PlaneFrame) {
+                PlaneFrame planeFrame = (PlaneFrame) this.fractalModel.getPlane();
                 planeFrame.setOptimization(s2);
 
                 state.updateDisplayChannel();
@@ -323,7 +345,7 @@ public class FractalView implements Builder<Region> {
 
         this.state.infoChannelProperty().addListener((o, s1, s2) -> {
             grid.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 3);
-            grid.add(retrieveFractalModifier(this.model.getEvaluator()), 1, 3);
+            grid.add(retrieveFractalModifier(this.fractalModel.getEvaluator()), 1, 3);
         });
 
         grid.addRow(0, new Label(I18n.getMessage("iterations")), iterationSlider);
@@ -406,7 +428,7 @@ public class FractalView implements Builder<Region> {
 
         this.state.infoChannelProperty().addListener((o, s1, s2) -> {
             grid.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
-            grid.add(retrieveColorableModifier(this.model.getColorization()), 1, 1);
+            grid.add(retrieveColorableModifier(this.fractalModel.getColorization()), 1, 1);
         });
 
         grid.addRow(0, new Label(I18n.getMessage("colorization")), createColorChoiceBox());
@@ -423,20 +445,20 @@ public class FractalView implements Builder<Region> {
     public ChoiceBox<Evaluator> createFractalChoiceBox() {
         ChoiceBox<Evaluator> choiceBox = new ChoiceBox<>();
 
-        choiceBox.setValue(this.model.getEvaluator());
+        choiceBox.setValue(this.fractalModel.getEvaluator());
         choiceBox.valueProperty().addListener((o, s1, s2) -> {
-            s2.setMaxIteration(this.model.getEvaluator().getMaxIteration());
-            this.model.setEvaluator(s2);
+            s2.setMaxIteration(this.fractalModel.getEvaluator().getMaxIteration());
+            this.fractalModel.setEvaluator(s2);
             this.state.updateInfoChannel();
             this.state.updateDisplayChannel();
         });
 
         choiceBox.getItems().addAll(
-                new Mandelbrot(10),
-                new MultiBrot(10, 2),
-                new MultiJulia(10, 2, Complex.ofCartesian(0, 0)),
-                new Newton(10, new Polynomial(-1, 0, 0, 1, 2)),
-                new Lyapunov(10, new int[]{0, 1}));
+                new Mandelbrot(20),
+                new MultiBrot(20, 2),
+                new MultiJulia(20, 2, Complex.ofCartesian(0, 0)),
+                new Newton(20, new Polynomial(-1, 0, 0, 1, 2)),
+                new Lyapunov(20, new int[]{0, 1}));
 
         return choiceBox;
     }
@@ -448,12 +470,12 @@ public class FractalView implements Builder<Region> {
      */
     public ChoiceBox<Colorization> createColorChoiceBox() {
         ChoiceBox<Colorization> coloringChoiceBox = new ChoiceBox<>();
-        coloringChoiceBox.setValue(this.model.getColorization());
+        coloringChoiceBox.setValue(this.fractalModel.getColorization());
 
         coloringChoiceBox.setOnAction(e -> {
             Colorization selected = coloringChoiceBox.getValue();
             if (selected != null) {
-                this.model.setColorization(selected);
+                this.fractalModel.setColorization(selected);
             }
             this.state.updateDisplayChannel();
         });

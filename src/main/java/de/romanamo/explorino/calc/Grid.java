@@ -69,7 +69,6 @@ public class Grid {
      * @param grid    grid to insert
      */
     public synchronized void insert(int xInsert, int yInsert, Grid grid) {
-        //TODO do validity copy checks
         for (int x = 0; x < grid.getWidth(); x++) {
             for (int y = 0; y < grid.getHeight(); y++) {
                 this.grid[y + yInsert][x + xInsert] = grid.grid[y][x];
