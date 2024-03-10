@@ -8,11 +8,20 @@ import de.romanamo.explorino.eval.Evaluation;
  */
 public class Grid {
 
+    /**
+     * Grid width.
+     */
     private final int width;
 
+    /**
+     * Grid height.
+     */
     private final int height;
 
-    protected final Evaluation[][] grid;
+    /**
+     * Grid.
+     */
+    private final Evaluation[][] grid;
 
     /**
      * Constructs a grid.

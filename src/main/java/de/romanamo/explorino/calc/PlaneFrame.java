@@ -15,54 +15,82 @@ import java.util.function.Function;
 
 public class PlaneFrame extends Plane {
 
+    /**
+     * Automated Thread pool time out.
+     */
+    private static final int TIME_OUT = 64;
+
+    /**
+     * Tile grid size.
+     */
     private Point tileGridSize;
 
-    private boolean useTileOptimize = false;
+    /**
+     * Optimization.
+     */
+    private boolean optimization = false;
 
+    /**
+     * Constructs a {@link PlaneFrame}.
+     *
+     * @param zoom         zoom
+     * @param gridSize     grid size
+     * @param planeSize    plane size
+     * @param planeOffset  plane offset
+     * @param tileGridSize tile grid size
+     */
     public PlaneFrame(double zoom, Point gridSize, Complex planeSize, Complex planeOffset, Point tileGridSize) {
         super(zoom, gridSize, planeSize, planeOffset);
         this.tileGridSize = tileGridSize;
     }
 
+    /**
+     * Gets the tile raster.
+     *
+     * @return tile raster
+     */
     private PlaneTile[][] getTileRaster() {
         //calculate size of the tile-raster
-        int tileRasterHeight = (int) Numeric.ceilDiv(gridSize.getY(), tileGridSize.getY());
-        int tileRasterWidth = (int) Numeric.ceilDiv(gridSize.getX(), tileGridSize.getX());
+        int tileRasterHeight = (int) Numeric.ceilDiv(getGridSize().getY(), tileGridSize.getY());
+        int tileRasterWidth = (int) Numeric.ceilDiv(getGridSize().getX(), tileGridSize.getX());
 
         //create the raster and fill it with tiles
         PlaneTile[][] tileRaster = new PlaneTile[tileRasterHeight][tileRasterWidth];
         for (int x = 0; x < tileRasterWidth; x++) {
             for (int y = 0; y < tileRasterHeight; y++) {
                 //Detect if the tiles are "edge cases"
-                boolean onHeightEdge = (y + 1) * tileGridSize.getY() > gridSize.getY();
-                boolean onWidthEdge = (x + 1) * tileGridSize.getX() > gridSize.getX();
+                boolean onHeightEdge = (y + 1) * tileGridSize.getY() > getGridSize().getY();
+                boolean onWidthEdge = (x + 1) * tileGridSize.getX() > getGridSize().getX();
 
                 //Set the Size of the Tile considering the special case that the tiles do not fit perfectly in
-                int singleHeight = onHeightEdge ? (gridSize.getY() - y * tileGridSize.getY()) : tileGridSize.getY();
-                int singleWidth = onWidthEdge ? (gridSize.getX() - x * tileGridSize.getX()) : tileGridSize.getX();
+                int curHeight = onHeightEdge ? (getGridSize().getY() - y * tileGridSize.getY()) : tileGridSize.getY();
+                int curWidth = onWidthEdge ? (getGridSize().getX() - x * tileGridSize.getX()) : tileGridSize.getX();
 
                 Complex top = this.transformToPlane(new Point(x * tileGridSize.getX(), y * tileGridSize.getY()));
 
-                Complex tileSize = this.getTileSize().divide(this.zoom);
+                Complex tileSize = this.getTileSize();
 
-                double adjustedReal = tileSize.getReal() * singleWidth;
-                double adjustedImag = tileSize.getImag() * singleHeight;
+                double adjustedReal = tileSize.getReal() * curWidth;
+                double adjustedImag = tileSize.getImag() * curHeight;
 
                 Complex adjustedTileSize = Complex.ofCartesian(adjustedReal, adjustedImag);
 
 
-                tileRaster[y][x] = new PlaneTile(new Point(singleWidth, singleHeight), adjustedTileSize, top);
+                tileRaster[y][x] = new PlaneTile(new Point(curWidth, curHeight), adjustedTileSize, top);
             }
         }
         return tileRaster;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Grid compute(Evaluator evaluator) {
         long start = System.currentTimeMillis();
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-        Grid grid = new Grid(gridSize.getX(), gridSize.getY());
+        Grid grid = new Grid(getGridSize().getX(), getGridSize().getY());
         PlaneTile[][] tileRaster = this.getTileRaster();
 
         for (int y = 0; y < tileRaster.length; y++) {
@@ -79,7 +107,7 @@ public class PlaneFrame extends Plane {
         }
         executor.shutdown();
         try {
-            boolean state = executor.awaitTermination(64, TimeUnit.SECONDS);
+            boolean state = executor.awaitTermination(TIME_OUT, TimeUnit.SECONDS);
             if (!state) {
                 Launcher.getLogger().warning("Failed Termination");
             }
@@ -93,21 +121,52 @@ public class PlaneFrame extends Plane {
         return grid;
     }
 
-    public boolean getUseTileOptimize() {
-        return this.useTileOptimize;
+    /**
+     * Gets the optimization.
+     *
+     * @return optimization
+     */
+    public boolean getOptimization() {
+        return this.optimization;
     }
 
-    public void setUseTileOptimize(boolean useTileOptimize) {
-        this.useTileOptimize = useTileOptimize;
+    /**
+     * Sets the optimization.
+     *
+     * @param optimization optimization
+     */
+    public void setOptimization(boolean optimization) {
+        this.optimization = optimization;
     }
 
+    /**
+     * Class to represent a plane tile.
+     */
     class PlaneTile implements Transformable, Computable {
 
+        /**
+         * Tile grid size.
+         */
         private final Point tileGridSize;
+
+        /**
+         * Tile plane size.
+         */
         private final Complex tilePlaneSize;
+
+        /**
+         * Tile origin.
+         */
         private final Complex tileOrigin;
 
-        public PlaneTile(Point tileGridSize, Complex tilePlaneSize, Complex tileOrigin) {
+        /**
+         * Constructs a plane tile.
+         *
+         * @param tileGridSize  tile grid size
+         * @param tilePlaneSize tile plane size
+         * @param tileOrigin    tile origin
+         */
+        PlaneTile(Point tileGridSize, Complex tilePlaneSize, Complex tileOrigin) {
             this.tileGridSize = tileGridSize;
             this.tilePlaneSize = tilePlaneSize;
             this.tileOrigin = tileOrigin;
@@ -130,10 +189,13 @@ public class PlaneFrame extends Plane {
             throw new UnsupportedOperationException("Unsupported Operation");
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Grid compute(Evaluator evaluator) {
 
-            AtomicBoolean isConnected = new AtomicBoolean(useTileOptimize);
+            AtomicBoolean isConnected = new AtomicBoolean(optimization);
             Evaluation initialEvaluation = evaluator.evaluate(this.transformToPlane(new Point(0, 0)));
 
             Grid grid = new Grid(this.tileGridSize.getX(), this.tileGridSize.getY());
@@ -183,5 +245,23 @@ public class PlaneFrame extends Plane {
             }
             return grid;
         }
+    }
+
+    /**
+     * Gets the tile grid size.
+     *
+     * @return tile grid size
+     */
+    public Point getTileGridSize() {
+        return tileGridSize;
+    }
+
+    /**
+     * Sets the tile grid size.
+     *
+     * @param tileGridSize tile grid size
+     */
+    public void setTileGridSize(Point tileGridSize) {
+        this.tileGridSize = tileGridSize;
     }
 }

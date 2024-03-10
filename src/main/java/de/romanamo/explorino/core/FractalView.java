@@ -315,7 +315,7 @@ public class FractalView implements Builder<Region> {
         optimizationCheckBox.selectedProperty().addListener((o, s1, s2) -> {
             if (this.model.getPlane() instanceof PlaneFrame) {
                 PlaneFrame planeFrame = (PlaneFrame) this.model.getPlane();
-                planeFrame.setUseTileOptimize(s2);
+                planeFrame.setOptimization(s2);
 
                 state.updateDisplayChannel();
             }
